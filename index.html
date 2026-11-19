@@ -66,7 +66,7 @@ nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow
 .arena::before{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(to top,rgb(255 255 255/.05),transparent);pointer-events:none}
 .arena h2{color:var(--on-arena);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .arena h2 small{font-family:var(--body);font-weight:600;font-size:.85rem;color:var(--arena-muted)}
-.vrow{--maxh:clamp(150px,30vh,330px);display:grid;grid-template-columns:repeat(var(--n,1),minmax(0,1fr));gap:clamp(8px,2vw,28px);align-items:stretch;height:calc(var(--maxh) + 210px);position:relative}
+.vrow{--maxh:clamp(150px,30vh,330px);display:grid;grid-template-columns:repeat(var(--n,1),minmax(0,1fr));gap:clamp(8px,2vw,28px);align-items:stretch;height:calc(var(--maxh) + 250px);position:relative}
 .vcol{display:grid;grid-template-rows:1fr auto;min-width:0;text-align:center}
 .vtop{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;min-width:0}
 .vcol .sc{font-family:var(--display);font-weight:900;font-size:clamp(1.2rem,2.8vw,2.4rem);line-height:1;color:#fff}
@@ -81,14 +81,33 @@ nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow
 .vfoot .tn{font-family:var(--display);font-weight:800;font-size:clamp(.9rem,1.8vw,1.25rem);line-height:1.3;max-width:100%;overflow-wrap:anywhere}
 .vfoot small{color:var(--arena-muted);font-size:.78rem;font-weight:600;line-height:1.35}
 .vfoot small.chase{color:#FFD966}
-.vrow.kids{--maxh:clamp(110px,20vh,220px);height:calc(var(--maxh) + 130px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(58px,1fr);overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+.vrow:not(.kids) .vfoot{height:128px;justify-content:flex-start}
+.vrow.kids .vfoot{height:74px;justify-content:flex-start}
+.vrow.kids{--maxh:clamp(110px,20vh,220px);height:calc(var(--maxh) + 150px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(58px,1fr);overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
 .vrow.kids .sc{font-size:clamp(.95rem,1.6vw,1.3rem)}
 .vrow.kids .pillar{width:min(100%,64px);border-radius:10px 10px 3px 3px}
 .vrow.kids .tn{font-size:.85rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .vrow.kids .rk{font-size:1rem}
 .vrow.kids .vcol.top3 .rk{color:var(--gold)}
 .countdown{font-weight:800;color:var(--gold)}
-.board-foot{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.board-foot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.gold-bar{background:linear-gradient(90deg,#B8860B,#F2C94C,#B8860B);color:#2A1E00;border-radius:16px;padding:12px 18px;font-family:var(--display);font-weight:900;font-size:clamp(1rem,2.2vw,1.5rem);text-align:center;box-shadow:0 0 30px rgb(242 201 76/.45);animation:shine 2.4s ease-in-out infinite}
+@keyframes shine{50%{box-shadow:0 0 50px rgb(242 201 76/.75)}}
+.goal{display:flex;flex-direction:column;gap:8px}
+.goal .gt{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.goal .gt b{font-family:var(--display);font-size:clamp(1rem,2vw,1.4rem)}
+.goal .gt span{font-family:var(--display);font-weight:900;color:var(--gold);font-size:clamp(1rem,2vw,1.4rem)}
+.gbar{height:26px;border-radius:99px;background:rgb(255 255 255/.12);overflow:hidden}
+.gbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2E9A5A,#7FE3A0);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.recs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.recs li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 10px;border-radius:10px;background:var(--sunk)}
+.recs li small{color:var(--muted);grid-column:1/-1}
+.recs li b.v{font-family:var(--display);font-weight:900;color:var(--green)}
+.vfoot .motto{color:#FFD966;font-weight:700;font-size:.82rem}
+.vfoot .cap{color:var(--arena-muted);font-size:.75rem}
+.vfoot .streak,.chip .stk{color:#FF9F43;font-weight:800}
+.calls{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.calls li{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .stars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .stars li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--sunk)}
 .medal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:900;color:#1B1606}
@@ -216,18 +235,28 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
       <div><h1>سباق الفرق</h1><p id="b-sub" class="sub"></p></div>
       <div class="tools">
         <div class="seg" role="group" aria-label="الفترة"><button id="rg-week" aria-pressed="true">هذا الأسبوع</button><button id="rg-season" aria-pressed="false">الموسم كله</button></div>
+        <button id="announce-btn" class="btn gold" type="button">لحظة الإعلان</button>
         <button id="fs" class="btn">ملء الشاشة</button>
       </div>
     </div>
+    <div id="gold-board" class="gold-bar" hidden></div>
+    <div id="goal-box" class="arena goal" hidden></div>
     <div class="arena"><h2>الفرق <small id="lead-line"></small></h2><div id="lanes" class="vrow"></div></div>
     <div class="arena"><h2 id="sr-t">سباق الطلاب</h2><div id="srace" class="vrow kids"></div></div>
     <div class="board-foot">
       <div class="card"><h2 id="stars-t">نجوم الأسبوع</h2><ol id="stars" class="stars"></ol></div>
+      <div class="card"><h2>الأرقام القياسية</h2><ul id="recs" class="recs"></ul></div>
       <div class="card"><h2>آخر التسميعات</h2><ul id="feed" class="feed"></ul></div>
     </div>
   </section>
 
   <section id="v-record" class="view" hidden>
+    <div id="gold-rec" class="gold-bar" hidden></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><h2>الساعة الذهبية</h2>
+      <div class="row"><select id="g-item" class="sel" aria-label="البند المضاعف"><option value="rev">نقاط المراجعة</option><option value="newQ">نقاط الحفظ الجديد</option><option value="both">الحفظ والمراجعة</option></select>
+      <select id="g-min" class="sel" aria-label="المدة"><option value="30">٣٠ دقيقة</option><option value="60" selected>ساعة</option><option value="90">ساعة ونصف</option></select>
+      <button id="g-start" class="btn gold" type="button">ابدأ</button><button id="g-stop" class="btn" type="button" hidden>أوقفها</button></div></div>
+      <p class="muted" style="margin:0">تعلنها فجأة، فتتضاعف نقاط البند المختار لكل تسميع يُسجَّل في وقتها، وتظهر على شاشة القاعة بعدّاد تنازلي.</p><p id="g-msg" class="msg" role="status"></p></div>
     <div class="rec-grid">
       <div class="card">
         <h2>اختر الطالب</h2>
@@ -295,9 +324,10 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
   </section>
 
   <section id="v-students" class="view" hidden>
+    <div class="card"><h2>مكالمة التكريم</h2><p class="muted" style="margin:0">يتصل الشيخ بوالد نجم الأسبوع ويهنئه. ضع العلامة بعد الاتصال.</p><ul id="calls" class="calls"></ul></div>
     <div class="card">
       <h2>الطلاب ومستوياتهم في الموسم</h2>
-      <div class="tbl-wrap"><table><thead><tr><th>الطالب</th><th>الفريق</th><th>المستوى</th><th>نقاط الموسم</th><th>هذا الأسبوع</th><th>إلى المستوى التالي</th></tr></thead><tbody id="s-body"></tbody></table></div>
+      <div class="tbl-wrap"><table><thead><tr><th>الطالب</th><th>الفريق</th><th>المستوى</th><th>نقاط الموسم</th><th>هذا الأسبوع</th><th>السلسلة</th><th>إلى المستوى التالي</th></tr></thead><tbody id="s-body"></tbody></table></div>
     </div>
   </section>
 
@@ -350,9 +380,21 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
         </ul>
       </div>
       <div class="card wide">
+        <h2>طرق إضافية للحماس</h2>
+        <ul>
+          <li><b>السلسلة:</b> كل يوم دراسي متتالٍ يسمّع فيه الطالب يزيد سلسلته. يكسب مكافأة عند ٥ أيام (<span data-v="s5"></span>)، و١٠ أيام (<span data-v="s10"></span>)، و٢٠ يومًا (<span data-v="s20"></span>). إذا انقطع يومًا بدأت السلسلة من جديد.</li>
+          <li><b>الساعة الذهبية:</b> يعلنها المعلم فجأة، فتتضاعف نقاط الحفظ أو المراجعة ×<span data-v="gold"></span> مدة محددة.</li>
+          <li><b>هدف الفصل المشترك:</b> شريط واحد يملؤه كل طلاب الفصل معًا، فيفرح كل طالب بإنجاز غيره.</li>
+          <li><b>الأرقام القياسية:</b> أكثر مراجعة في يوم، وأكثر حفظ في يوم، وأطول سلسلة، وأعلى نقاط في أسبوع. من يكسر رقمًا يُعلن اسمه على الشاشة.</li>
+          <li><b>هوية الفريق:</b> لكل فريق لون وهتاف وقائد يتغير كل أسبوع.</li>
+          <li><b>لحظة الإعلان:</b> قبل الانصراف تُعرض حصيلة اليوم على الشاشة: فريق اليوم، ونجومه، وأصحاب السلاسل، والأرقام الجديدة.</li>
+          <li><b>مكالمة التكريم:</b> يتصل الشيخ بوالد نجم الأسبوع ويهنئه.</li>
+        </ul>
+      </div>
+      <div class="card wide">
         <h2>الجوائز</h2>
         <ul>
-          <li><b>فريق الأسبوع:</b> يحمل راية الدوري في أسبوعه، ويختار لعبة وقت اللعب يوم الخميس.</li>
+          <li><b>فريق الأسبوع:</b> يحمل راية الدوري في أسبوعه، ويختار لعبة وقت اللعب يوم الخميس، ويبدأ الحلقة أولًا، ويجلس في الصف الأول، ويختار ترتيب المبارزة.</li>
           <li><b>نجوم الأسبوع:</b> تُذكر أسماؤهم في رسالة الأسرة الأسبوعية.</li>
           <li><b>المستويات:</b> شارة بلون المستوى يلبسها الطالب، وشهادة لمن بلغ «المتميز» و«النابغة».</li>
           <li><b>فريق الموسم:</b> رحلة أو جائزة جماعية في حفل ختام الفصل.</li>
@@ -383,6 +425,19 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
         <textarea id="a-names" aria-label="أسماء الطلاب"></textarea>
         <div class="row"><select id="a-team" class="sel" aria-label="الفريق"></select><button id="a-add" class="btn primary" type="button">أضف الطلاب</button></div>
         <p id="a-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card">
+        <h2>هدف الفصل المشترك</h2>
+        <p class="muted" style="margin:0">هدف يعمل عليه كل طلاب <b id="goal-scope">البرنامج</b> معًا، ويظهر شريطه على شاشة القاعة. لكل فصل هدفه: اختر الفصل من أعلى الصفحة أولًا.</p>
+        <div class="cfg-grid">
+          <label>البند<select id="gl-metric" class="sel"><option value="rev">صفحات المراجعة</option><option value="newQ">صفحات الحفظ الجديد</option><option value="pts">مجموع النقاط</option></select></label>
+          <label>الهدف<input id="gl-target" type="number" min="1" step="1" inputmode="numeric"></label>
+          <label>من<input id="gl-from" type="date"></label>
+          <label>إلى<input id="gl-to" type="date"></label>
+          <label style="grid-column:1/-1">العنوان على الشاشة<input id="gl-title" placeholder="مثل: نراجع معًا ٦٠٤ صفحات هذا الشهر"></label>
+        </div>
+        <div class="row"><button id="gl-save" class="btn primary" type="button">احفظ الهدف</button><button id="gl-del" class="btn" type="button">احذف الهدف</button></div>
+        <p id="gl-msg" class="msg" role="status"></p>
       </div>
       <div class="card">
         <h2>بداية الموسم</h2>
@@ -418,8 +473,8 @@ const TEAM_DEF = [
   ['t1','فريق ابن مسعود','#2F7FC1'],['t2','فريق أُبيّ بن كعب','#E0702C'],
   ['t3','فريق معاذ بن جبل','#7B4FB5'],['t4','فريق سالم مولى أبي حذيفة','#2E9A5A'],['t5','فريق زيد بن ثابت','#C2414B']];
 // القيم الأصلية؛ ما يحفظه المدير في settings/main يحلّ محلها
-const CFG0 = { newQ: 50, rev: 10, top: 20, ward: 50, sard: 300, rules: 200, adab: 200, sunnah: 50, fullDay: 200, duel: 50 };
-const CFG_LABELS = { newQ: 'ربع صفحة حفظ', rev: 'صفحة مراجعة', top: 'زيادة الإتقان (٪)', ward: 'إتمام الورد المقرر', sard: 'سرد جزء كامل', rules: 'الالتزام بالقواعد', adab: 'الأدب والأخلاق', sunnah: 'كل سنة', fullDay: 'يوم الفريق الكامل', duel: 'الفوز في المبارزة' };
+const CFG0 = { newQ: 50, rev: 10, top: 20, ward: 50, sard: 300, rules: 200, adab: 200, sunnah: 50, fullDay: 200, duel: 50, s5: 100, s10: 250, s20: 500, gold: 2 };
+const CFG_LABELS = { newQ: 'ربع صفحة حفظ', rev: 'صفحة مراجعة', top: 'زيادة الإتقان (٪)', ward: 'إتمام الورد المقرر', sard: 'سرد جزء كامل', rules: 'الالتزام بالقواعد', adab: 'الأدب والأخلاق', sunnah: 'كل سنة', fullDay: 'يوم الفريق الكامل', duel: 'الفوز في المبارزة', s5: 'سلسلة ٥ أيام', s10: 'سلسلة ١٠ أيام', s20: 'سلسلة ٢٠ يومًا', gold: 'مضاعف الساعة الذهبية (×)' };
 const LV0 = [{ n: 'الأساس', p: 1000 }, { n: 'الصاعد', p: 3000 }, { n: 'المثابر', p: 6000 }, { n: 'المتميز', p: 10000 }, { n: 'النابغة', p: 15000 }];
 const LV_COLORS = ['#3FA34D','#2F7FC1','#7B4FB5','#EE7A2D','#C9961A'];
 const TEAM_COLORS = ['#2F7FC1','#E0702C','#7B4FB5','#2E9A5A','#C2414B','#0E8C8C','#B8578E','#6B7A2E'];
@@ -442,9 +497,10 @@ function weekRange(){ const d = new Date(); d.setHours(12); const s = new Date(d
 const dayName = s => new Date(s + 'T12:00').toLocaleDateString('ar-SA-u-ca-gregory-nu-arab', {weekday:'long', day:'numeric', month:'long'});
 
 // النقاط: الربع ٥٠، الصفحة مراجعةً ١٠، الإتقان +٢٠٪ على الحفظ والمراجعة
-function calcPts(f){
+function calcPts(f, gold){
   if (f.quality === 'redo') return 0;
-  let base = f.newQ * CF.newQ + f.rev * CF.rev;
+  const gm = k => gold === k || gold === 'both' ? CF.gold : 1;
+  let base = f.newQ * CF.newQ * gm('newQ') + f.rev * CF.rev * gm('rev');
   if (f.quality === 'top') base = Math.round(base * (1 + CF.top / 100));
   return base + (f.ward ? CF.ward : 0) + (f.sard ? CF.sard : 0);
 }
@@ -466,7 +522,7 @@ function entryText(e){
   if (e.rev) a.push(revText(e.rev) + ' مراجعة');
   if (e.sard) a.push('سرد جزء');
   if (e.ward && !a.length) a.push('أتم ورده');
-  return a.join(' و') + (e.quality === 'top' ? ' · متقن' : '');
+  return a.join(' و') + (e.quality === 'top' ? ' · متقن' : '') + (e.gold ? ' · ذهبية' : '');
 }
 
 const S = { teams: [], students: [], entries: [], settings: {}, demo: true, db: null, range: 'week', ready: false };
@@ -476,6 +532,48 @@ const studentById = id => S.students.find(s => s.id === id);
 // ---- الحساب ----
 function inRange(date, r){ return (!r[0] || date >= r[0]) && (!r[1] || date <= r[1]); }
 function seasonRange(){ return [S.settings.start || '', '']; }
+// ---- السلسلة: أيام دراسية متتالية (الأحد إلى الخميس) فيها تسميع ----
+function prevSchool(d){ const x = new Date(d + 'T12:00'); do { x.setDate(x.getDate() - 1); } while (x.getDay() > 4); return ymd(x); }
+const wkStart = d => { const x = new Date(d + 'T12:00'); x.setDate(x.getDate() - x.getDay()); return ymd(x); };
+let SK = { ref: null, cf: null, v: {} };
+function streaks(){
+  if (SK.ref === S.entries && SK.cf === CF) return SK.v;
+  const days = {}; for (const e of S.entries) if (isTasmee(e)) (days[e.sid] ||= new Set()).add(e.date);
+  const t = today(), out = {};
+  for (const [sid, set] of Object.entries(days)){
+    let run = 0, prev = null, best = 0; const bonus = {};
+    for (const d of [...set].sort()){
+      run = prev && prevSchool(d) === prev ? run + 1 : 1; prev = d; best = Math.max(best, run);
+      const b = run === 5 ? CF.s5 : run === 10 ? CF.s10 : run === 20 ? CF.s20 : 0; if (b) bonus[d] = (bonus[d] || 0) + b;
+    }
+    out[sid] = { cur: prev === t || prev === prevSchool(t) ? run : 0, best, bonus };
+  }
+  SK = { ref: S.entries, cf: CF, v: out }; return out;
+}
+// ---- الأرقام القياسية في الموسم ----
+function records(){
+  const r = seasonRange(), byDay = {}, byWeek = {}, stk = streaks();
+  for (const e of S.entries){
+    if (!inRange(e.date, r) || e.kind === 'duel' || !studentById(e.sid)) continue;
+    if (isTasmee(e)){ const k = e.sid + '|' + e.date; const o = byDay[k] ||= { sid: e.sid, date: e.date, rev: 0, newQ: 0 }; o.rev += e.rev || 0; o.newQ += e.newQ || 0; }
+    const w = e.sid + '|' + wkStart(e.date); const o = byWeek[w] ||= { sid: e.sid, date: e.date, p: 0 }; o.p += ptsOf(e); if (e.date > o.date) o.date = e.date;
+  }
+  for (const [sid, x] of Object.entries(stk)) for (const [d, b] of Object.entries(x.bonus)) if (inRange(d, r) && studentById(sid)){ const o = byWeek[sid + '|' + wkStart(d)] ||= { sid, date: d, p: 0 }; o.p += b; }
+  const best = (arr, f) => arr.reduce((a, x) => f(x) > (a ? f(a) : 0) ? x : a, null);
+  const d = Object.values(byDay), w = Object.values(byWeek);
+  const rv = best(d, x => x.rev), nq = best(d, x => x.newQ), wk = best(w, x => x.p);
+  const sb = Object.entries(stk).reduce((a, [sid, x]) => studentById(sid) && x.best > (a ? a.v : 0) ? { sid, v: x.best } : a, null);
+  return [
+    rv && { k: 'rev', l: 'أكثر مراجعة في يوم', v: rv.rev, t: revText(rv.rev), sid: rv.sid, date: rv.date },
+    nq && { k: 'newQ', l: 'أكثر حفظ جديد في يوم', v: nq.newQ, t: pagesText(nq.newQ), sid: nq.sid, date: nq.date },
+    sb && sb.v > 1 && { k: 'streak', l: 'أطول سلسلة', v: sb.v, t: n(sb.v) + ' أيام متتالية', sid: sb.sid },
+    wk && { k: 'week', l: 'أعلى نقاط في أسبوع', v: wk.p, t: n(wk.p) + ' نقطة', sid: wk.sid, date: wk.date },
+  ].filter(Boolean);
+}
+const goldActive = cls => !!(R.golden && R.golden.until > Date.now() && (!R.golden.cls || R.golden.cls === cls));
+const goldText = () => ({ rev: 'نقاط المراجعة', newQ: 'نقاط الحفظ الجديد', both: 'نقاط الحفظ والمراجعة' })[R.golden?.item] || '';
+const teamCls = sid => teamById(studentById(sid)?.team)?.cls || '';
+
 function compute(r){
   const stu = {}; S.students.forEach(s => stu[s.id] = 0);
   const duel = {}, daySet = {};
@@ -486,6 +584,8 @@ function compute(r){
     stu[e.sid] += ptsOf(e);
     if (isTasmee(e)) (daySet[e.date] ||= new Set()).add(e.sid);
   }
+  const stk = streaks();
+  for (const sid in stu) for (const [d, b] of Object.entries(stk[sid]?.bonus || {})) if (inRange(d, r)) stu[sid] += b;
   const sizes = S.teams.map(t => S.students.filter(s => s.team === t.id).length);
   const maxSize = Math.max(1, ...sizes);
   const teams = S.teams.map((t, i) => {
@@ -518,16 +618,31 @@ function renderBoard(){
     else if (prev) chase = prev.score === t.score ? `<small class="chase">متعادل مع ${esc(prev.name)}</small>` : `<small class="chase">باقي ${n(prev.score - t.score + 1)} ليتجاوز ${esc(prev.name)}</small>`;
     return `<div class="vcol${lead ? ' first' : ''}" style="--c:${t.color};--h:${(t.score / top).toFixed(3)}">
       <div class="vtop">${lead ? '<span class="lead">في الصدارة</span>' : ''}${todayT[t.id] > 0 ? `<span class="today">+${n(todayT[t.id])} اليوم</span>` : ''}<b class="sc num">${n(t.score)}</b><div class="pillar"></div></div>
-      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(t.name)}</b>${chase}</div></div>`; }).join('') : '<p class="empty">أنشئ الفرق من «الإعداد».</p>';
+      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(t.name)}</b>${t.motto ? `<span class="motto">«${esc(t.motto)}»</span>` : ''}${studentById(t.captain) ? `<span class="cap">القائد: ${esc(studentById(t.captain).name)}</span>` : ''}${chase}</div></div>`; }).join('') : '<p class="empty">أنشئ الفرق من «الإعداد».</p>';
+  // الساعة الذهبية وهدف الفصل والأرقام القياسية
+  renderGold();
+  const gk = curCls() || 'all', goal = R.goals.find(g => g.id === gk);
+  $('goal-box').hidden = !goal || S.demo;
+  if (goal && !S.demo){
+    const gr = [goal.from || '', goal.to || ''];
+    const done = goal.metric === 'pts' ? Object.values(compute(gr).stu).reduce((a, x) => a + x, 0)
+      : S.entries.filter(e => isTasmee(e) && inRange(e.date, gr)).reduce((a, e) => a + (goal.metric === 'rev' ? (e.rev || 0) : (e.newQ || 0) / 4), 0);
+    const pct = Math.min(100, Math.round(done / Math.max(1, goal.target) * 100)), unit = goal.metric === 'pts' ? 'نقطة' : 'صفحة';
+    $('goal-box').innerHTML = `<div class="gt"><b>${esc(goal.title || 'هدف الفصل')}</b><span class="num">${n(Math.floor(done))} من ${n(goal.target)} ${unit} · ${n(pct)}٪</span></div><div class="gbar"><i style="width:${pct}%"></i></div>${pct >= 100 ? '<b style="color:#7FE3A0">تحقق الهدف! ما شاء الله</b>' : ''}`;
+  }
+  const recs = records();
+  $('recs').innerHTML = recs.length ? recs.map(x => { const st = studentById(x.sid), t = teamById(st?.team);
+    return `<li><span><b>${esc(st?.name || '')}</b> <span class="dot" style="--c:${t?.color || '#999'}"></span></span><b class="v">${esc(x.t)}</b><small>${x.l}</small></li>`; }).join('')
+    : '<li class="empty">تُسجَّل هنا أول الأرقام مع أول تسميع.</li>';
   $('lead-line').textContent = teams.length > 1 && teams[0].score > 0 ? 'كل نقطة تقرّب فريقك من القمة' : '';
   $('sr-t').textContent = S.range === 'week' ? 'سباق الطلاب هذا الأسبوع' : 'سباق الطلاب في الموسم';
-  const sAll = compute(seasonRange()).stu;
+  const sAll = compute(seasonRange()).stu, stkB = streaks();
   const sr = S.students.map(s => ({ s, p: stu[s.id] || 0 })).sort((a, b) => b.p - a.p || a.s.name.localeCompare(b.s.name, 'ar'));
   const sTop = Math.max(1, ...sr.map(x => x.p));
   $('srace').innerHTML = sr.length ? sr.map((x, i) => { const t = teamById(x.s.team);
     return `<div class="vcol${i < 3 && x.p > 0 ? ' top3' : ''}" style="--c:${t?.color || '#999'};--h:${(x.p / sTop).toFixed(3)}" title="${esc(x.s.name)} · ${esc(t?.name || '')}">
       <div class="vtop"><b class="sc num">${n(x.p)}</b><div class="pillar"></div></div>
-      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(x.s.name)}</b><small>${LEVELS[levelOf(sAll[x.s.id] || 0)][0]}</small></div></div>`; }).join('')
+      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(x.s.name)}</b><small>${LEVELS[levelOf(sAll[x.s.id] || 0)][0]}</small>${(stkB[x.s.id]?.cur || 0) >= 2 ? `<small class="streak">سلسلة ${n(stkB[x.s.id].cur)}</small>` : ''}</div></div>`; }).join('')
     : '<p class="empty">أضف الطلاب من «الإعداد».</p>';
   $('stars-t').textContent = S.range === 'week' ? 'نجوم الأسبوع' : 'نجوم الموسم';
   const stars = S.students.map(s => ({ s, p: stu[s.id] })).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 3);
@@ -541,12 +656,16 @@ function renderBoard(){
 }
 
 function renderStudents(){
-  const s1 = compute(seasonRange()).stu, w = compute(weekRange()).stu;
+  const s1 = compute(seasonRange()).stu, w = compute(weekRange()).stu, stk = streaks();
+  const ws = weekRange()[0], star = S.students.map(s => ({ s, p: w[s.id] || 0 })).filter(x => x.p > 0).sort((a, b) => b.p - a.p)[0];
+  $('calls').innerHTML = star ? (() => { const id = ws + '_' + star.s.id, done = R.calls.find(c => c.id === id)?.done, t = teamById(star.s.team);
+    return `<li><b>${esc(star.s.name)}</b><span class="muted">${esc(t?.name || '')} · ${n(star.p)} نقطة هذا الأسبوع</span><label class="opt"><input type="checkbox" data-call="${id}"${done ? ' checked' : ''}${S.demo ? ' disabled' : ''}><span>${done ? 'تم الاتصال' : 'لم يُتصل بعد'}</span></label></li>`; })()
+    : '<li class="empty">يظهر هنا نجم الأسبوع بعد أول تسميع.</li>';
   const rows = [...S.students].sort((a, b) => s1[b.id] - s1[a.id]);
   $('s-body').innerHTML = rows.length ? rows.map(s => { const t = teamById(s.team), p = s1[s.id], li = levelOf(p), L = LEVELS[li], nx = LEVELS[li+1];
     const pct = nx ? Math.round((p - L[1]) / (nx[1] - L[1]) * 100) : 100;
     return `<tr><td><b>${esc(s.name)}</b></td><td><span class="dot" style="--c:${t?.color || '#999'}"></span>${esc(t?.name || '—')}</td>
-      <td><span class="badge" style="--lc:${L[2]}">${L[0]}</span></td><td class="num"><b>${n(p)}</b></td><td class="num">${n(w[s.id])}</td>
+      <td><span class="badge" style="--lc:${L[2]}">${L[0]}</span></td><td class="num"><b>${n(p)}</b></td><td class="num">${n(w[s.id])}</td><td class="num">${n(stk[s.id]?.cur || 0)}<small class="muted"> (الأطول ${n(stk[s.id]?.best || 0)})</small></td>
       <td>${nx ? `<div class="prog" style="--lc:${nx[2]}" title="${pct}%"><i style="width:${pct}%"></i></div><small class="muted">${n(nx[1] - p)} إلى ${nx[0]}</small>` : '<b>بلغ القمة</b>'}</td></tr>`; }).join('')
     : '<tr><td colspan="10" class="empty">لا طلاب بعد. أضفهم من «الإعداد».</td></tr>';
 }
@@ -555,7 +674,7 @@ function renderStudents(){
 const F = { sid: null, newQ: 0, rev: 0 };
 function formVals(){ return { newQ: F.newQ, rev: F.rev, quality: document.querySelector('input[name=q]:checked').value, ward: $('r-ward').checked, sard: $('r-sard').checked }; }
 function renderForm(){
-  const v = formVals(), p = calcPts(v), s = studentById(F.sid);
+  const s = studentById(F.sid), v = formVals(), p = calcPts(v, s && goldActive(teamCls(s.id)) ? R.golden.item : '');
   $('o-new').textContent = pagesText(F.newQ); $('o-rev').textContent = revText(F.rev);
   $('r-total').textContent = n(p);
   $('r-name').textContent = s ? s.name : 'لم تختر طالبًا بعد';
@@ -567,12 +686,12 @@ function renderForm(){
 function setMsg(id, text, kind){ const el = $(id); el.textContent = text; el.className = 'msg' + (kind ? ' ' + kind : ''); el.dataset.kind = kind || ''; }
 function renderPicker(){
   const q = $('r-search').value.trim();
-  const lv = compute(seasonRange()).stu;
+  const lv = compute(seasonRange()).stu, stkP = streaks();
   $('r-students').innerHTML = S.teams.map(t => {
     const mem = S.students.filter(s => s.team === t.id && (!q || s.name.includes(q)));
     if (!mem.length) return '';
     return `<div class="team-block" style="--c:${t.color}"><h3>${esc(t.name)}</h3><div class="chips">${mem.map(s =>
-      `<button type="button" class="chip" data-sid="${s.id}" aria-pressed="${s.id === F.sid}" style="--c:${t.color}">${esc(s.name)}<span class="lv">${LEVELS[levelOf(lv[s.id])][0]}</span></button>`).join('')}</div></div>`;
+      `<button type="button" class="chip" data-sid="${s.id}" aria-pressed="${s.id === F.sid}" style="--c:${t.color}">${esc(s.name)}<span class="lv">${LEVELS[levelOf(lv[s.id])][0]}</span>${(stkP[s.id]?.cur || 0) >= 2 ? `<span class="lv stk"> · سلسلة ${n(stkP[s.id].cur)}</span>` : ''}</button>`).join('')}</div></div>`;
   }).join('') || '<p class="empty">لا نتائج.</p>';
 }
 function renderToday(){
@@ -635,11 +754,16 @@ function renderSetup(){
   const clsOpts = id => '<option value="">بلا فصل</option>' + R.classes.map(c => `<option value="${c.id}"${c.id === id ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
   if (!busy($('t-list'))){
     const arm = $('t-list').dataset.arm;
-    $('t-list').innerHTML = R.teams.length ? R.teams.map(t => `<div class="row"><input type="color" data-tcolor="${t.id}" value="${esc(t.color || '#2F7FC1')}" aria-label="لون ${esc(t.name)}"><input class="tname" data-tname="${t.id}" value="${esc(t.name)}" aria-label="اسم الفريق">${R.classes.length ? `<select class="sel" data-tcls="${t.id}" aria-label="فصل ${esc(t.name)}">${clsOpts(t.cls)}</select>` : ''}<span class="muted">${n(R.students.filter(s => s.team === t.id).length)} طلاب</span><button type="button" class="btn" data-tdel="${t.id}" style="color:var(--danger)">${arm === t.id ? 'تأكيد' : 'حذف'}</button></div>`).join('')
+    $('t-list').innerHTML = R.teams.length ? R.teams.map(t => `<div class="row"><input type="color" data-tcolor="${t.id}" value="${esc(t.color || '#2F7FC1')}" aria-label="لون ${esc(t.name)}"><input class="tname" data-tname="${t.id}" value="${esc(t.name)}" aria-label="اسم الفريق">${R.classes.length ? `<select class="sel" data-tcls="${t.id}" aria-label="فصل ${esc(t.name)}">${clsOpts(t.cls)}</select>` : ''}<span class="muted">${n(R.students.filter(s => s.team === t.id).length)} طلاب</span><button type="button" class="btn" data-tdel="${t.id}" style="color:var(--danger)">${arm === t.id ? 'تأكيد' : 'حذف'}</button><input class="tname" data-tmotto="${t.id}" value="${esc(t.motto || '')}" placeholder="هتاف الفريق" aria-label="هتاف ${esc(t.name)}"><select class="sel" data-tcap="${t.id}" aria-label="قائد ${esc(t.name)}"><option value="">القائد هذا الأسبوع</option>${R.students.filter(s => s.team === t.id).map(s => `<option value="${s.id}"${s.id === t.captain ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>`).join('')
       : '<p class="muted" style="margin:0">لم تُنشأ الفرق بعد. اختر العدد، ثم عدّل الأسماء والألوان كما تريد.</p>';
   }
   $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + R.teams.map(t => `<option value="${t.id}">${esc(tLabel(t))}</option>`).join('');
   if (!busy($('set-start'))) $('set-start').value = S.settings.start || '';
+  $('goal-scope').textContent = curCls() ? 'فصل ' + clsName(curCls()) : 'البرنامج';
+  const g = R.goals.find(x => x.id === (curCls() || 'all'));
+  if (!['gl-metric','gl-target','gl-from','gl-to','gl-title'].some(id => $(id) === document.activeElement)){
+    $('gl-metric').value = g?.metric || 'rev'; $('gl-target').value = g?.target || ''; $('gl-from').value = g?.from || ''; $('gl-to').value = g?.to || ''; $('gl-title').value = g?.title || '';
+  }
   if (!busy($('cfg-grid'))) $('cfg-grid').innerHTML = Object.keys(CFG0).map(k => `<label>${CFG_LABELS[k]}<input id="cfg-${k}" type="number" min="0" step="1" inputmode="numeric" value="${CF[k]}"></label>`).join('');
   if (!busy($('lv-grid'))) $('lv-grid').innerHTML = LEVELS.slice(1).map((l, i) => `<label><input id="lvn-${i}" value="${esc(l[0])}" aria-label="اسم المستوى ${i + 1}"><input id="lvp-${i}" type="number" min="1" step="1" inputmode="numeric" value="${l[1]}" aria-label="نقاط المستوى ${i + 1}"></label>`).join('');
   if (busy($('m-body'))) return;
@@ -681,7 +805,7 @@ function demoData(){
   return { teams, students, entries };
 }
 // البيانات الحقيقية تُحفظ في R، والعرض يقرأ من S
-const R = { classes: [], teams: [], students: [], entries: [], settings: {} };
+const R = { classes: [], teams: [], students: [], entries: [], settings: {}, golden: null, goals: [], calls: [] };
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
 const CLS_KEY = 'hifz-league-cls';
@@ -718,6 +842,8 @@ function announce(e){
   if (e.kind !== 'duel'){
     const after = compute(seasonRange()).stu[e.sid] || 0, before = after - (e.pts || 0);
     if (levelOf(after) > levelOf(before)) lvl = `<div class="lvl">ارتقى إلى مستوى «${LEVELS[levelOf(after)][0]}»</div>`;
+    const sk = streaks()[e.sid];
+    if (sk && e.date === today() && [5, 10, 20].includes(sk.cur)) lvl += `<div class="lvl">سلسلة ${n(sk.cur)} أيام متتالية! +${n(sk.bonus[e.date] || 0)}</div>`;
   }
   popQ.push({ c: t.color, h: `<div class="big num">+${n(e.pts)}</div><div class="nm">${esc(e.kind === 'duel' ? t.name : s.name)}</div><div class="muted">${esc(e.kind === 'duel' ? 'فاز في المبارزة' : t.name + ' · ' + entryText(e))}</div>${lvl}` });
   if (!popTimer) nextPop();
@@ -731,10 +857,29 @@ function announceOvertake(before, after){
   });
   if (popQ.length && !popTimer) nextPop();
 }
+function announceRecords(before, after){
+  after.forEach(x => { const b = before.find(y => y.k === x.k); if (!b || x.v <= b.v) return; const st = studentById(x.sid), t = teamById(st?.team);
+    popQ.push({ c: t?.color, ms: 3600, h: `<div class="big" style="color:var(--c)">رقم قياسي!</div><div class="nm">${esc(st?.name || '')}</div><div class="muted">${x.l}: ${esc(x.t)}</div>` }); });
+  if (popQ.length && !popTimer) nextPop();
+}
+// لحظة الإعلان: حصيلة اليوم على الشاشة بطاقة بعد بطاقة
+function dailyShow(){
+  const td = [today(), today()], { stu, teams } = compute(td), stk = streaks();
+  const total = Object.values(stu).reduce((a, x) => a + x, 0);
+  const items = [{ c: 'var(--green)', ms: 4200, h: `<div class="nm">حصاد اليوم</div><div class="big num">${n(total)}</div><div class="muted">نقطة جمعها ${curCls() ? 'طلاب ' + esc(clsName(curCls())) : 'الطلاب'} اليوم</div>` }];
+  if (teams[0]?.score > 0) items.push({ c: teams[0].color, ms: 4200, h: `<div class="nm">فريق اليوم</div><div class="big" style="color:var(--c)">${esc(teams[0].name)}</div><div class="muted num">+${n(teams[0].score)} نقطة</div>` });
+  const top = S.students.map(s => ({ s, p: stu[s.id] || 0 })).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 3);
+  if (top.length) items.push({ c: 'var(--gold)', ms: 5200, h: `<div class="nm">نجوم اليوم</div>${top.map((x, i) => `<div style="font-family:var(--display);font-weight:900;font-size:1.5rem">${n(i + 1)}. ${esc(x.s.name)} <span class="muted num">${n(x.p)}</span></div>`).join('')}` });
+  const ss = S.students.map(s => ({ s, c: stk[s.id]?.cur || 0 })).filter(x => x.c >= 3).sort((a, b) => b.c - a.c).slice(0, 3);
+  if (ss.length) items.push({ c: '#FF9F43', ms: 4600, h: `<div class="nm">أصحاب السلاسل</div>${ss.map(x => `<div style="font-family:var(--display);font-weight:800;font-size:1.3rem">${esc(x.s.name)}: ${n(x.c)} أيام متتالية</div>`).join('')}` });
+  records().filter(x => x.date === today()).forEach(x => items.push({ c: 'var(--gold)', ms: 4000, h: `<div class="nm">رقم قياسي اليوم</div><div class="big" style="font-size:2.4rem">${esc(studentById(x.sid)?.name || '')}</div><div class="muted">${x.l}: ${esc(x.t)}</div>` }));
+  items.push({ c: 'var(--green)', ms: 4000, h: `<div class="nm">${weekLeft()}</div><div class="muted">كل نقطة غدًا تقرّب فريقك من القمة</div>` });
+  clearTimeout(popTimer); popTimer = null; popQ.length = 0; popQ.push(...items); nextPop();
+}
 function nextPop(){
   const it = popQ.shift(); if (!it){ $('pop').hidden = true; popTimer = null; return; }
   $('pop-card').innerHTML = it.h; $('pop-card').style.setProperty('--c', it.c || 'var(--green)'); $('pop').hidden = false;
-  popTimer = setTimeout(nextPop, 2600);
+  popTimer = setTimeout(nextPop, it.ms || 2600);
 }
 $('pop').addEventListener('click', () => { clearTimeout(popTimer); popQ.length = 0; popTimer = null; $('pop').hidden = true; });
 
@@ -759,11 +904,11 @@ $('r-form').addEventListener('change', () => { setMsg('r-msg', '', ''); renderFo
 $('r-date').onchange = renderToday;
 $('r-form').addEventListener('submit', async ev => {
   ev.preventDefault();
-  const v = formVals(), pts = calcPts(v), s = studentById(F.sid);
+  const s = studentById(F.sid), gold = s && goldActive(teamCls(s.id)) ? R.golden.item : '', v = formVals(), pts = calcPts(v, gold);
   if (!S.db || S.demo || !s || pts <= 0) return;
   $('r-save').disabled = true;
   try {
-    await S.db.collection('entries').add({ kind: 'tasmee', sid: s.id, date: $('r-date').value || today(), newQ: v.newQ, rev: v.rev, quality: v.quality, ward: v.ward, sard: v.sard, pts, at: Date.now() });
+    await S.db.collection('entries').add({ kind: 'tasmee', sid: s.id, date: $('r-date').value || today(), newQ: v.newQ, rev: v.rev, quality: v.quality, ward: v.ward, sard: v.sard, gold, pts, at: Date.now() });
     setMsg('r-msg', 'سُجّلت ' + n(pts) + ' نقطة لـ' + s.name + '.', 'good'); resetForm(); F.sid = null; renderPicker(); renderForm();
   } catch (e) { setMsg('r-msg', e?.code === 'not_granted' || e?.code === 'permission_denied' ? 'لا تملك صلاحية التسجيل. اطلب من المدير أن يشاركك الصفحة بصلاحية «مساهم».' : 'تعذّر الحفظ، حاول مرة أخرى (' + (e?.code || 'خطأ') + ').', 'err'); renderForm(); }
 });
@@ -836,8 +981,33 @@ $('t-list').onchange = async ev => {
     if (nm){ const v = nm.value.trim(); if (!v) return setMsg('t-msg', 'اكتب اسم الفريق.', 'err'); await S.db.doc('teams/' + nm.dataset.tname).update({ name: v }); setMsg('t-msg', 'حُفظ اسم الفريق.', 'good'); }
     if (col) await S.db.doc('teams/' + col.dataset.tcolor).update({ color: col.value });
     const tc = ev.target.closest('[data-tcls]'); if (tc) await S.db.doc('teams/' + tc.dataset.tcls).update({ cls: tc.value });
+    const tm = ev.target.closest('[data-tmotto]'); if (tm) await S.db.doc('teams/' + tm.dataset.tmotto).update({ motto: tm.value.trim() });
+    const cp = ev.target.closest('[data-tcap]'); if (cp) await S.db.doc('teams/' + cp.dataset.tcap).update({ captain: cp.value });
   } catch (e) { saveErr('t-msg', e); }
 };
+function renderGold(){
+  const on = goldActive(curCls()), left = on ? R.golden.until - Date.now() : 0;
+  const txt = on ? `الساعة الذهبية: ${goldText()} ×${n(CF.gold)} · باقي ${n(Math.floor(left / 60000))}:${n(Math.floor(left / 1000) % 60).padStart(2, '٠')}` : '';
+  for (const id of ['gold-board','gold-rec']){ $(id).hidden = !on; if (on) $(id).textContent = txt; }
+  $('g-stop').hidden = !(R.golden && R.golden.until > Date.now()); $('g-start').hidden = !$('g-stop').hidden;
+}
+let goldWas = false;
+setInterval(() => { const on = !!(R.golden && R.golden.until > Date.now()); if (on || goldWas) renderGold(); if (goldWas && !on){ goldWas = false; renderForm(); } goldWas = on; }, 1000);
+$('g-start').onclick = async () => {
+  if (!S.db || S.demo) return setMsg('g-msg', 'أضف الطلاب أولًا.', 'err');
+  try { await S.db.doc('settings/golden').set({ item: $('g-item').value, until: Date.now() + +$('g-min').value * 60000, cls: curCls() }); setMsg('g-msg', 'بدأت الساعة الذهبية.', 'good'); } catch (e) { saveErr('g-msg', e); }
+};
+$('g-stop').onclick = async () => { if (!S.db) return; try { await S.db.doc('settings/golden').set({ item: '', until: 0, cls: '' }); setMsg('g-msg', 'أُوقفت.', ''); } catch (e) { saveErr('g-msg', e); } };
+$('announce-btn').onclick = dailyShow;
+$('gl-save').onclick = async () => {
+  if (!S.db) return setMsg('gl-msg', 'سجّل دخولك أولًا.', 'err');
+  const target = Number($('gl-target').value); if (!Number.isInteger(target) || target <= 0) return setMsg('gl-msg', 'اكتب رقم الهدف.', 'err');
+  const from = $('gl-from').value, to = $('gl-to').value; if (!from || !to || to < from) return setMsg('gl-msg', 'حدّد تاريخ البداية والنهاية.', 'err');
+  try { await S.db.doc('goals/' + (curCls() || 'all')).set({ metric: $('gl-metric').value, target, from, to, title: $('gl-title').value.trim() }); setMsg('gl-msg', 'حُفظ الهدف، ويظهر الآن على لوحة السباق.', 'good'); } catch (e) { saveErr('gl-msg', e); }
+};
+$('gl-del').onclick = async () => { if (!S.db) return; try { await S.db.doc('goals/' + (curCls() || 'all')).delete(); setMsg('gl-msg', 'حُذف الهدف.', ''); } catch (e) { saveErr('gl-msg', e); } };
+$('calls').onchange = async ev => { const c = ev.target.closest('[data-call]'); if (!c || !S.db) return;
+  try { await S.db.doc('calls/' + c.dataset.call).set({ done: c.checked, at: Date.now() }); } catch (e) { c.checked = !c.checked; } };
 $('cls').onchange = () => { lsSet(CLS_KEY, $('cls').value || null); F.sid = null; sync(); };
 $('c-add').onclick = async () => {
   if (!S.db) return setMsg('c-msg', 'سجّل دخولك أولًا.', 'err');
@@ -946,6 +1116,9 @@ function gate(){
 function attach(db){
   const timer = setTimeout(() => { S.ready = true; renderAll(); }, 10000);
   S.db = db; const seen = { classes: 0, teams: 0, students: 0, entries: 0, settings: 0 };
+  db.doc('settings/golden').onSnapshot(d => { R.golden = d.exists ? d.data() : null; sync(); }, () => {});
+  db.collection('goals').onSnapshot(q => { R.goals = q.docs.map(d => ({ id: d.id, ...d.data() })); sync(); }, () => {});
+  db.collection('calls').onSnapshot(q => { R.calls = q.docs.map(d => ({ id: d.id, ...d.data() })); sync(); }, () => {});
   const loaded = () => { if (Object.values(seen).every(Boolean)){ clearTimeout(timer); S.ready = true; } };
   const fail = e => { clearTimeout(timer); S.ready = true; if (e?.code === 'pin'){ lsSet(PIN_KEY, null); location.reload(); } renderAll(); };
   db.collection('classes').onSnapshot(q => { R.classes = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.classes = 1; loaded(); sync(); }, fail);
@@ -954,10 +1127,10 @@ function attach(db){
   db.collection('entries').onSnapshot(q => {
     const fresh = seen.entries && !S.demo ? q.docChanges().filter(c => c.type === 'added' && !c.doc.metadata.fromCache && (c.doc.data().at || 0) > Date.now() - 60000).map(c => ({ id: c.doc.id, ...c.doc.data() })) : [];
     const onBoard = location.hash.slice(1) === 'board' || !location.hash;
-    const before = seen.entries && !S.demo ? compute(weekRange()).teams.map(t => t.id) : null;
+    const before = seen.entries && !S.demo ? compute(weekRange()).teams.map(t => t.id) : null, recBefore = before ? records() : null;
     R.entries = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.entries = 1; loaded(); sync();
     if (onBoard) fresh.forEach(announce);
-    if (onBoard && before && !S.demo) announceOvertake(before, compute(weekRange()).teams);
+    if (onBoard && before && !S.demo){ announceOvertake(before, compute(weekRange()).teams); announceRecords(recBefore, records()); }
   }, fail);
   db.doc('settings/main').onSnapshot(d => { R.settings = d.exists ? d.data() : {}; seen.settings = 1; loaded(); sync(); }, fail);
 }
