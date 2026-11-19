@@ -205,6 +205,12 @@ th{font-size:.85rem;color:var(--muted);font-weight:700}
 .setup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
 textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tt-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tt-cards div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tt-cards b{display:block;font-family:var(--display);font-weight:900;font-size:1.6rem;color:var(--green)}
+#tt-head button{border:0;background:none;font-weight:700;color:inherit;cursor:pointer}
+#tt-head button[aria-pressed=true]{color:var(--green)}
+#tt-foot td{font-weight:800;border-top:2px solid var(--line)}
 .cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .cfg-grid label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.9rem}
 .cfg-grid input,.tname,.sname{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 10px;font-weight:600;min-width:0}
@@ -224,7 +230,7 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
   <header class="top">
     <div class="brand"><img src="logo.png" alt="شعار نابغة"><div><b>دوري الحُفّاظ</b><span>مسابقة الحفظ والمراجعة · برنامج نابغة</span></div></div>
     <nav aria-label="أقسام المسابقة">
-      <a href="#board">لوحة السباق</a><a href="#record">تسجيل التسميع</a><a href="#daily">نقاط اليوم</a><a href="#duel">المبارزة</a><a href="#students">الطلاب</a><a href="#rules">القوانين</a><a href="#setup">الإعداد</a>
+      <a href="#board">لوحة السباق</a><a href="#record">تسجيل التسميع</a><a href="#daily">نقاط اليوم</a><a href="#duel">المبارزة</a><a href="#students">الطلاب</a><a href="#totals">مجموع الصفحات</a><a href="#rules">القوانين</a><a href="#setup">الإعداد</a>
     </nav>
     <label id="cls-wrap" class="clsel" hidden><span>الفصل</span><select id="cls" class="sel" aria-label="الفصل"></select></label>
   </header>
@@ -321,6 +327,31 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
       </div>
       <div class="card"><h2>مبارزات هذا الأسبوع</h2><ul id="d-log" class="today"></ul></div>
     </div>
+  </section>
+
+  <section id="v-totals" class="view" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2>مجموع الصفحات</h2><button id="tt-csv" class="btn" type="button">تنزيل الجدول</button></div>
+      <div class="row" id="tt-presets">
+        <button class="btn" type="button" data-p="today">اليوم</button><button class="btn" type="button" data-p="yesterday">أمس</button><button class="btn" type="button" data-p="week">هذا الأسبوع</button><button class="btn" type="button" data-p="last-week">الأسبوع الماضي</button><button class="btn" type="button" data-p="month">هذا الشهر</button>
+      </div>
+      <div class="cfg-grid">
+        <label>من<input id="tt-from" type="date"></label>
+        <label>إلى<input id="tt-to" type="date"></label>
+        <label id="tt-cls-wrap">الفصل<select id="tt-cls" class="sel"></select></label>
+        <label>الحلقة<select id="tt-team" class="sel"></select></label>
+      </div>
+      <div class="opts"><b>نوع التسميع:</b>
+        <label class="opt"><input type="checkbox" id="tt-k-hifz" checked><span>حفظ</span></label>
+        <label class="opt"><input type="checkbox" id="tt-k-rev" checked><span>مراجعة</span></label>
+      </div>
+    </div>
+    <div id="tt-cards" class="tt-cards"></div>
+    <div class="seg" role="group" aria-label="العرض" id="tt-views">
+      <button data-v="students" aria-pressed="true">الطلاب</button><button data-v="teams" aria-pressed="false">الحلقات</button><button data-v="classes" aria-pressed="false">الفصول</button><button data-v="days" aria-pressed="false">الأيام</button><button data-v="all" aria-pressed="false">الإجمالي</button>
+    </div>
+    <div class="card" id="tt-table-card"><div class="tbl-wrap"><table><thead id="tt-head"></thead><tbody id="tt-body"></tbody><tfoot id="tt-foot"></tfoot></table></div>
+      <p class="muted" style="margin:0">الحفظ بالصفحات (الربع ربع صفحة)، والمراجعة بالصفحات، من تسميعات هذه الصفحة. «أيام التسميع» في الصفوف المجمّعة أيامُ الطلاب.</p></div>
   </section>
 
   <section id="v-students" class="view" hidden>
@@ -670,6 +701,54 @@ function renderStudents(){
     : '<tr><td colspan="10" class="empty">لا طلاب بعد. أضفهم من «الإعداد».</td></tr>';
 }
 
+// ---- مجموع الصفحات ----
+const T = { from: '', to: '', cls: '', team: '', view: 'students', sort: 'total' };
+const pg = x => new Intl.NumberFormat('ar-SA-u-nu-arab', { maximumFractionDigits: 1 }).format(Math.round(x * 10) / 10);
+function totalsRows(){
+  const src = S.demo ? S : R, classes = S.demo ? [] : R.classes;
+  const teams = src.teams.filter(t => (!T.cls || t.cls === T.cls) && (!T.team || t.id === T.team));
+  const tids = new Set(teams.map(t => t.id)), studs = src.students.filter(s => tids.has(s.team)), sids = new Set(studs.map(s => s.id));
+  const kh = $('tt-k-hifz').checked, kr = $('tt-k-rev').checked;
+  const [a, b] = T.from <= T.to ? [T.from, T.to] : [T.to, T.from];
+  const es = src.entries.filter(e => isTasmee(e) && sids.has(e.sid) && e.date >= a && e.date <= b);
+  const sum = list => { const days = new Set(list.map(e => e.sid + '|' + e.date));
+    const h = kh ? list.reduce((x, e) => x + (e.newQ || 0) / 4, 0) : 0, r = kr ? list.reduce((x, e) => x + (e.rev || 0), 0) : 0;
+    return { hifz: h, rev: r, total: h + r, days: days.size, count: list.length, top: list.filter(e => e.quality === 'top').length }; };
+  const teamOf = Object.fromEntries(studs.map(s => [s.id, s.team])), clsName = id => classes.find(c => c.id === id)?.name || 'بلا فصل';
+  let rows = [];
+  if (T.view === 'students') rows = studs.map(s => ({ name: s.name, note: teams.find(t => t.id === s.team)?.name || '', ...sum(es.filter(e => e.sid === s.id)) }));
+  if (T.view === 'teams') rows = teams.map(t => ({ name: t.name, note: classes.length ? clsName(t.cls) : '', members: studs.filter(s => s.team === t.id).length, ...sum(es.filter(e => teamOf[e.sid] === t.id)) }));
+  if (T.view === 'classes') { const groups = {}; teams.forEach(t => (groups[t.cls || ''] ||= []).push(t.id));
+    rows = Object.entries(groups).map(([c, ids]) => ({ name: clsName(c), note: n(ids.length) + ' حلقات', members: studs.filter(s => ids.includes(s.team)).length, ...sum(es.filter(e => ids.includes(teamOf[e.sid]))) })); }
+  if (T.view === 'days') { const byDay = {}; es.forEach(e => (byDay[e.date] ||= []).push(e));
+    rows = Object.keys(byDay).sort().map(d => ({ name: dayName(d), note: '', ...sum(byDay[d]) })); }
+  if (T.view !== 'days') rows.sort((x, y) => T.sort === 'name' ? x.name.localeCompare(y.name, 'ar') : y[T.sort] - x[T.sort]);
+  return { rows, total: { name: 'الجميع', ...sum(es), members: studs.length } };
+}
+function renderTotals(){
+  if (!T.from){ T.from = weekRange()[0]; T.to = today(); }
+  $('tt-from').value = T.from; $('tt-to').value = T.to;
+  const classes = S.demo ? [] : R.classes, teams = (S.demo ? S : R).teams;
+  $('tt-cls-wrap').hidden = !classes.length;
+  $('tt-cls').innerHTML = '<option value="">كل الفصول</option>' + classes.map(c => `<option value="${c.id}"${c.id === T.cls ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
+  $('tt-team').innerHTML = '<option value="">كل الحلقات</option>' + teams.filter(t => !T.cls || t.cls === T.cls).map(t => `<option value="${t.id}"${t.id === T.team ? ' selected' : ''}>${esc(t.name)}</option>`).join('');
+  const { rows, total } = totalsRows();
+  $('tt-cards').innerHTML = [['الحفظ', pg(total.hifz) + ' صفحة'], ['المراجعة', pg(total.rev) + ' صفحة'], ['المجموع', pg(total.total) + ' صفحة'], ['التسميعات', n(total.count) + ' · منها ' + n(total.top) + ' متقن'], ['الطلاب', n(total.members)]]
+    .map(([l, v]) => `<div><small class="muted">${l}</small><b>${v}</b></div>`).join('');
+  document.querySelectorAll('#tt-views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === T.view)));
+  $('tt-table-card').hidden = T.view === 'all';
+  const cols = [['name', T.view === 'days' ? 'اليوم' : 'الاسم'], ['hifz', 'حفظ'], ['rev', 'مراجعة'], ['total', 'المجموع'], ['days', 'أيام التسميع'], ['top', 'متقن']];
+  $('tt-head').innerHTML = '<tr>' + cols.map(([k, l]) => `<th><button type="button" data-s="${k}" aria-pressed="${T.sort === k}">${l}${T.sort === k ? ' ↓' : ''}</button></th>`).join('') + '</tr>';
+  const cell = r => `<td><b>${esc(r.name)}</b>${r.note || r.members ? `<br><small class="muted">${esc(r.note || '')}${r.members ? (r.note ? ' · ' : '') + n(r.members) + ' طالبًا' : ''}</small>` : ''}</td><td class="num">${pg(r.hifz)}</td><td class="num">${pg(r.rev)}</td><td class="num"><b>${pg(r.total)}</b></td><td class="num">${n(r.days)}</td><td class="num">${n(r.top)} من ${n(r.count)}</td>`;
+  $('tt-body').innerHTML = rows.length ? rows.map(r => `<tr>${cell(r)}</tr>`).join('') : '<tr><td colspan="6" class="empty">لا تسميع في هذه الفترة.</td></tr>';
+  $('tt-foot').innerHTML = rows.length ? `<tr>${cell({ ...total, members: 0, note: '' })}</tr>` : '';
+}
+function ttPreset(p){
+  const d = new Date(today() + 'T12:00'), wk = weekRange()[0], sh = (x, k) => { const y = new Date(x + 'T12:00'); y.setDate(y.getDate() + k); return ymd(y); };
+  [T.from, T.to] = p === 'yesterday' ? [sh(today(), -1), sh(today(), -1)] : p === 'week' ? [wk, today()] : p === 'last-week' ? [sh(wk, -7), sh(wk, -1)] : p === 'month' ? [ymd(new Date(d.getFullYear(), d.getMonth(), 1)), today()] : [today(), today()];
+  renderTotals();
+}
+
 // ---- التسجيل ----
 const F = { sid: null, newQ: 0, rev: 0 };
 function formVals(){ return { newQ: F.newQ, rev: F.rev, quality: document.querySelector('input[name=q]:checked').value, ward: $('r-ward').checked, sard: $('r-sard').checked }; }
@@ -784,7 +863,7 @@ function renderAll(){
   document.querySelector('#v-board h1').textContent = 'سباق الفرق' + (curC ? ' · ' + clsName(curC) : '');
   const VV = { ...CF, half: CF.newQ * 2, ten: CF.rev * 10 };
   document.querySelectorAll('[data-v]').forEach(el => { el.textContent = n(VV[el.dataset.v] ?? 0); });
-  renderBoard(); renderStudents(); renderPicker(); renderForm(); renderToday(); renderDaily(); renderDuel(); renderSetup();
+  renderTotals(); renderBoard(); renderStudents(); renderPicker(); renderForm(); renderToday(); renderDaily(); renderDuel(); renderSetup();
   $('lv-list').innerHTML = LEVELS.slice(1).map(l => `<div style="--lc:${l[2]}">${l[0]}<small class="num">${n(l[1])} نقطة</small></div>`).join('');
 }
 
@@ -884,7 +963,7 @@ function nextPop(){
 $('pop').addEventListener('click', () => { clearTimeout(popTimer); popQ.length = 0; popTimer = null; $('pop').hidden = true; });
 
 // ---- التنقل ----
-const VIEWS = ['board','record','daily','duel','students','rules','setup'];
+const VIEWS = ['board','record','daily','duel','students','totals','rules','setup'];
 function route(){
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'board';
   VIEWS.forEach(k => $('v-' + k).hidden = k !== v);
@@ -1008,6 +1087,20 @@ $('gl-save').onclick = async () => {
 $('gl-del').onclick = async () => { if (!S.db) return; try { await S.db.doc('goals/' + (curCls() || 'all')).delete(); setMsg('gl-msg', 'حُذف الهدف.', ''); } catch (e) { saveErr('gl-msg', e); } };
 $('calls').onchange = async ev => { const c = ev.target.closest('[data-call]'); if (!c || !S.db) return;
   try { await S.db.doc('calls/' + c.dataset.call).set({ done: c.checked, at: Date.now() }); } catch (e) { c.checked = !c.checked; } };
+$('tt-presets').onclick = ev => { const b = ev.target.closest('[data-p]'); if (b) ttPreset(b.dataset.p); };
+$('tt-from').onchange = e => { T.from = e.target.value || T.from; renderTotals(); };
+$('tt-to').onchange = e => { T.to = e.target.value || T.to; renderTotals(); };
+$('tt-cls').onchange = e => { T.cls = e.target.value; T.team = ''; renderTotals(); };
+$('tt-team').onchange = e => { T.team = e.target.value; renderTotals(); };
+$('tt-k-hifz').onchange = renderTotals; $('tt-k-rev').onchange = renderTotals;
+$('tt-views').onclick = ev => { const b = ev.target.closest('[data-v]'); if (b){ T.view = b.dataset.v; renderTotals(); } };
+$('tt-head').onclick = ev => { const b = ev.target.closest('[data-s]'); if (b){ T.sort = b.dataset.s; renderTotals(); } };
+$('tt-csv').onclick = () => {
+  const { rows, total } = totalsRows(), q = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const lines = [['الاسم', 'ملاحظة', 'حفظ (صفحات)', 'مراجعة (صفحات)', 'المجموع (صفحات)', 'أيام التسميع', 'التسميعات', 'متقن'], ...[...rows, total].map(r => [r.name, r.note || '', r.hifz.toFixed(1), r.rev.toFixed(1), r.total.toFixed(1), r.days, r.count, r.top])];
+  const url = URL.createObjectURL(new Blob(['\ufeff' + lines.map(l => l.map(q).join(',')).join('\n')], { type: 'text/csv;charset=utf-8' }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: `مجموع-الصفحات_${T.from}_${T.to}.csv` }); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 $('cls').onchange = () => { lsSet(CLS_KEY, $('cls').value || null); F.sid = null; sync(); };
 $('c-add').onclick = async () => {
   if (!S.db) return setMsg('c-msg', 'سجّل دخولك أولًا.', 'err');
@@ -1052,7 +1145,7 @@ $('m-body').onclick = async ev => { const b = ev.target.closest('[data-rm]'); if
   body.dataset.arm = ''; try { await S.db.doc('students/' + id).delete(); } catch (e) {} };
 
 // ---- تحديث تلقائي لنسخة GitHub: الصفحة المفتوحة منذ الصباح تأخذ آخر إصدار وحدها ----
-const BUILD = '20261119091000';
+const BUILD = '20261119203830';
 if (BUILD !== 'dev') setInterval(async () => {
   try {
     const v = (await fetch('version.txt?' + Date.now(), { cache: 'no-store' }).then(r => r.text())).trim();
