@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>دوري الحفاظ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* لوحة سباق للفرق في الأعلى وتحتها نجوم الأسبوع وآخر التسميعات؛ بقية الأقسام أدوات للمعلم */
+:root{
+  --bg:#F3EFE3; --surface:#FFFFFF; --sunk:#EAE4D3; --ink:#11251F; --muted:#5A6A64; --line:#DDD5C1;
+  --green:#0F3D34; --gold:#B8901A; --gold-soft:#F3E6B8; --on-green:#FFFFFF; --danger:#B4232F; --ok:#23764A;
+  --display:"Cairo","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic","Cairo",Tahoma,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1C18; --surface:#112B25; --sunk:#0D241F; --ink:#EFEBDF; --muted:#9DB1AA; --line:#24453D;
+  --green:#3E9C86; --gold:#E2BE4E; --gold-soft:#3A3315; --on-green:#06130F; --danger:#F07A83; --ok:#6FCF97; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1C18; --surface:#112B25; --sunk:#0D241F; --ink:#EFEBDF; --muted:#9DB1AA; --line:#24453D;
+  --green:#3E9C86; --gold:#E2BE4E; --gold-soft:#3A3315; --on-green:#06130F; --danger:#F07A83; --ok:#6FCF97; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.app{max-width:1280px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.3;text-wrap:balance}
+h2{font-size:1.15rem;font-weight:800}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-inline-end:auto}
+.brand img{width:40px;height:auto;background:#fff;border-radius:10px;padding:4px}
+.brand b{font-family:var(--display);font-weight:900;font-size:1.3rem;color:var(--green)}
+.brand span{color:var(--muted);font-size:.85rem;display:block;line-height:1.2}
+nav{display:flex;gap:4px;flex-wrap:wrap;background:var(--sunk);padding:4px;border-radius:12px}
+nav a{padding:6px 12px;border-radius:9px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem}
+nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0/.08)}
+
+.banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--r);padding:10px 14px;font-weight:500}
+.banner a{color:inherit;font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.muted{color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:600}
+.btn:hover{border-color:var(--green)}
+.primary{background:var(--green);color:var(--on-green);border-color:var(--green)}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.gold{background:var(--gold);color:#1B1606;border-color:var(--gold)}
+.view{display:flex;flex-direction:column;gap:18px}
+
+/* لوحة السباق */
+.board-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.board-head h1{font-size:clamp(1.8rem,4.6vw,3.2rem);font-weight:900;color:var(--green)}
+.board-head .sub{color:var(--muted);margin:0}
+.board-head .tools{display:flex;gap:8px;margin-inline-start:auto;flex-wrap:wrap}
+.seg{display:flex;background:var(--sunk);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:8px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.lanes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.lane{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;border-inline-start:8px solid var(--c)}
+.lane .rank{font-family:var(--display);font-weight:900;font-size:clamp(1.6rem,3.4vw,2.6rem);width:1.6em;text-align:center;color:var(--c)}
+.lane .who{min-width:0;display:flex;flex-direction:column;gap:6px}
+.lane .who b{font-family:var(--display);font-size:clamp(1.05rem,2.2vw,1.5rem);font-weight:800}
+.lane .who small{color:var(--muted);font-weight:500;font-size:.85rem}
+.track{height:16px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
+.fill{height:100%;background:var(--c);border-radius:99px;position:relative;transition:width 1s cubic-bezier(.2,.8,.2,1);min-width:16px}
+.fill::after{content:"";position:absolute;inset-inline-end:-7px;top:50%;width:26px;height:26px;transform:translateY(-50%);border-radius:50%;background:var(--surface);border:5px solid var(--c)}
+.lane .score{font-family:var(--display);font-weight:900;font-size:clamp(1.4rem,3.2vw,2.4rem);min-width:3.5em;text-align:left}
+.lane.first{box-shadow:0 0 0 2px var(--gold)}
+.lane .crown{font-size:.8rem;font-weight:700;background:var(--gold);color:#1B1606;border-radius:6px;padding:0 8px;margin-inline-start:8px;vertical-align:middle}
+.board-foot{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.stars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.stars li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--sunk)}
+.medal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:900;color:#1B1606}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.feed li{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--line);min-width:0}
+.feed li:last-child{border-bottom:0}
+.feed .pts{font-family:var(--display);font-weight:900;color:var(--ok);min-width:3.6em}
+.feed .what{color:var(--muted);font-size:.9rem}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-inline-end:6px}
+.empty{color:var(--muted);padding:6px 0}
+
+/* إعلان النقاط */
+.pop{position:fixed;inset:0;display:grid;place-items:center;background:rgb(0 0 0/.35);z-index:50;padding:16px}
+.pop-card{background:var(--surface);border-radius:20px;padding:28px 36px;text-align:center;border-top:10px solid var(--c);animation:rise .5s cubic-bezier(.2,.9,.3,1.3);max-width:560px}
+.pop-card .big{font-family:var(--display);font-weight:900;font-size:clamp(3rem,10vw,6rem);color:var(--ok);line-height:1.1}
+.pop-card .nm{font-family:var(--display);font-weight:800;font-size:1.6rem}
+.pop-card .lvl{margin-top:10px;background:var(--gold-soft);border-radius:10px;padding:8px 12px;font-weight:700}
+@keyframes rise{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* التسجيل */
+.rec-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:start}
+.search{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 12px;width:100%}
+.team-block{display:flex;flex-direction:column;gap:6px}
+.team-block h3{font-size:.95rem;font-weight:800;color:var(--c)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 12px;font-weight:600;font-size:.95rem}
+.chip[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff}
+.chip .lv{font-size:.75rem;opacity:.8;margin-inline-start:4px}
+.field{display:grid;grid-template-columns:8.5em 1fr;gap:10px;align-items:center}
+.field>span{font-weight:700}
+.stepper{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.stepper button{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:1.3rem;font-weight:700}
+.stepper output{min-width:9em;text-align:center;font-weight:700;font-size:1.05rem}
+.stepper .quick{width:auto;padding:0 10px;font-size:.9rem}
+.hint{color:var(--muted);font-size:.85rem;grid-column:2}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt span{display:inline-block;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 12px;font-weight:600;cursor:pointer}
+.opt input:checked+span{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.opt input:focus-visible+span{outline:3px solid var(--gold);outline-offset:2px}
+.opt.redo input:checked+span{background:var(--danger);border-color:var(--danger);color:#fff}
+.total{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:12px;flex-wrap:wrap}
+.total b{font-family:var(--display);font-weight:900;font-size:2.2rem;color:var(--green)}
+.msg{min-height:1.4em;margin:0;font-weight:600}
+.msg.err{color:var(--danger)} .msg.good{color:var(--ok)}
+.today{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.today li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px dashed var(--line)}
+.today li:last-child{border:0}
+.today .x{margin-inline-start:auto;border:0;background:none;color:var(--danger);font-weight:700}
+
+/* نقاط اليوم */
+.daily th{text-align:center}.daily th:first-child{text-align:right}
+.daily td{text-align:center}.daily td:first-child{text-align:right}
+.daily th small{font-weight:500}
+.daily .grp td{text-align:right;font-family:var(--display);font-weight:800;color:var(--c);background:var(--sunk)}
+.tick{width:40px;height:40px;border-radius:10px;border:2px solid var(--line);background:var(--bg);font-weight:900;font-size:1.1rem;color:transparent}
+.tick[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.tick:disabled{opacity:.5;cursor:not-allowed}
+
+/* المبارزة */
+.duel-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start}
+.vs{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vs select,.sel{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;font-weight:700}
+.vs .v{font-family:var(--display);font-weight:900;color:var(--gold)}
+.wheel{background:var(--green);color:var(--on-green);border-radius:18px;padding:28px 16px;text-align:center;display:flex;flex-direction:column;gap:6px;min-height:170px;justify-content:center}
+.wheel .s{font-family:var(--display);font-weight:900;font-size:clamp(2rem,6vw,3.6rem);line-height:1.2}
+.wheel .a{font-size:1.2rem;font-weight:600;opacity:.9}
+.win{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.win button{padding:12px;border-radius:12px;border:2px solid var(--c);background:var(--surface);font-family:var(--display);font-weight:800;font-size:1.05rem;color:var(--ink)}
+.win button:hover{background:var(--c);color:#fff}
+
+/* الطلاب */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+th{font-size:.85rem;color:var(--muted);font-weight:700}
+.badge{display:inline-block;border-radius:7px;padding:1px 9px;font-weight:700;font-size:.85rem;color:#fff;background:var(--lc)}
+.prog{height:8px;background:var(--sunk);border-radius:99px;min-width:90px}
+.prog i{display:block;height:100%;border-radius:99px;background:var(--lc)}
+
+/* القوانين */
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.rules .wide{grid-column:1/-1}
+.rules p,.rules ul{margin:0}
+.rules ul{padding-inline-start:1.2em;display:flex;flex-direction:column;gap:4px}
+.pts-tbl td:last-child{font-family:var(--display);font-weight:800;color:var(--green);white-space:nowrap}
+.pts-tbl{min-width:0}
+.hadith{font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--green);line-height:1.8}
+.levels{display:flex;flex-wrap:wrap;gap:8px}
+.levels div{border-radius:10px;padding:8px 14px;color:#fff;background:var(--lc);font-weight:700;display:flex;flex-direction:column;line-height:1.3}
+.levels small{font-weight:500;opacity:.9}
+
+/* الإعداد */
+.setup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+@media (max-width:820px){
+  .board-foot,.rec-grid,.duel-grid,.rules,.setup{grid-template-columns:minmax(0,1fr)}
+  .field{grid-template-columns:1fr}.hint{grid-column:1}
+  .lane{gap:10px;padding:10px 12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+:fullscreen .app{max-width:none}
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+  <header class="top">
+    <div class="brand"><img src="logo.png" alt="شعار نابغة"><div><b>دوري الحُفّاظ</b><span>مسابقة الحفظ والمراجعة · برنامج نابغة</span></div></div>
+    <nav aria-label="أقسام المسابقة">
+      <a href="#board">لوحة السباق</a><a href="#record">تسجيل التسميع</a><a href="#daily">نقاط اليوم</a><a href="#duel">المبارزة</a><a href="#students">الطلاب</a><a href="#rules">القوانين</a><a href="#setup">الإعداد</a>
+    </nav>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+
+  <section id="v-board" class="view">
+    <div class="board-head">
+      <div><h1>سباق الفرق</h1><p id="b-sub" class="sub"></p></div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="الفترة"><button id="rg-week" aria-pressed="true">هذا الأسبوع</button><button id="rg-season" aria-pressed="false">الموسم كله</button></div>
+        <button id="fs" class="btn">ملء الشاشة</button>
+      </div>
+    </div>
+    <ol id="lanes" class="lanes"></ol>
+    <div class="board-foot">
+      <div class="card"><h2 id="stars-t">نجوم الأسبوع</h2><ol id="stars" class="stars"></ol></div>
+      <div class="card"><h2>آخر التسميعات</h2><ul id="feed" class="feed"></ul></div>
+    </div>
+  </section>
+
+  <section id="v-record" class="view" hidden>
+    <div class="rec-grid">
+      <div class="card">
+        <h2>اختر الطالب</h2>
+        <input id="r-search" class="search" type="search" placeholder="ابحث بالاسم" aria-label="ابحث عن طالب">
+        <div id="r-students" class="view" style="gap:14px"></div>
+      </div>
+      <form id="r-form" class="card" novalidate>
+        <h2 id="r-name">لم تختر طالبًا بعد</h2>
+        <div class="field"><span>التاريخ</span><input id="r-date" type="date" class="sel"></div>
+        <div class="field"><span>الحفظ الجديد</span>
+          <div class="stepper"><button type="button" data-k="newQ" data-d="-1" aria-label="أنقص ربع صفحة">−</button><output id="o-new">لا شيء</output><button type="button" data-k="newQ" data-d="1" aria-label="زد ربع صفحة">+</button></div>
+          <small class="hint">كل نصف صفحة = ١٠٠ نقطة (الربع = ٥٠)</small></div>
+        <div class="field"><span>المراجعة</span>
+          <div class="stepper"><button type="button" data-k="rev" data-d="-1" aria-label="أنقص صفحة">−</button><output id="o-rev">لا شيء</output><button type="button" data-k="rev" data-d="1" aria-label="زد صفحة">+</button><button type="button" class="quick" data-k="rev" data-d="5">+٥</button><button type="button" class="quick" data-k="rev" data-d="10">+١٠</button></div>
+          <small class="hint">كل ١٠ صفحات = ١٠٠ نقطة (الصفحة = ١٠)</small></div>
+        <div class="field"><span>جودة التسميع</span>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="q" value="top"><span>متقن بلا خطأ (+٢٠٪)</span></label>
+            <label class="opt"><input type="radio" name="q" value="good" checked><span>جيد</span></label>
+            <label class="opt redo"><input type="radio" name="q" value="redo"><span>يُعاد التسميع</span></label>
+          </div></div>
+        <div class="field"><span>الورد والإنجازات</span>
+          <div class="opts">
+            <label class="opt"><input type="checkbox" id="r-ward"><span>أتمّ ورده المقرر (+٥٠)</span></label>
+            <label class="opt"><input type="checkbox" id="r-sard"><span>سرد جزءًا كاملًا في جلسة (+٣٠٠)</span></label>
+          </div></div>
+        <div class="total"><span>نقاط هذا التسميع</span><b id="r-total" class="num">٠</b><button id="r-save" type="submit" class="btn primary">سجّل النقاط</button></div>
+        <p id="r-msg" class="msg" role="status"></p>
+      </form>
+    </div>
+    <div class="card"><h2 id="r-today-t">تسميعات اليوم</h2><ul id="r-today" class="today"></ul></div>
+  </section>
+
+  <section id="v-daily" class="view" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2 id="y-title">نقاط اليوم</h2><input id="y-date" type="date" class="sel" aria-label="التاريخ"></div>
+      <p class="muted" style="margin:0">خانة القواعد وخانة الأدب ٢٠٠ نقطة لكل منهما، وكل سنة ٥٠ نقطة. يضع كل مسؤول علامته في خانته، والضغط مرة ثانية يلغيها. هذه النقاط تدخل في مستوى الطالب ومجموع فريقه، ولا تظهر تفاصيلها على اللوحة.</p>
+      <div class="tbl-wrap"><table class="daily"><thead><tr><th>الطالب</th><th>الالتزام بالقواعد</th><th>الأدب والأخلاق</th><th>الضحى</th><th>سنة الفجر</th><th>الظهر القبلية</th><th>الظهر البعدية</th><th>سنة العصر</th><th>سنة المغرب</th><th>النقاط</th></tr></thead><tbody id="y-body"></tbody></table></div>
+      <p id="y-msg" class="msg" role="status"></p>
+    </div>
+    <div class="card">
+      <h2>متى يستحقها الطالب</h2>
+      <ul style="margin:0;padding-inline-start:1.2em;display:flex;flex-direction:column;gap:4px">
+        <li><b>الالتزام بالقواعد:</b> التزم بقواعد البرنامج في يومه.</li>
+        <li><b>الأدب والأخلاق:</b> كان حسن الأدب والأخلاق مع زملائه ومعلميه في يومه.</li>
+        <li><b>السنن:</b> صلّى الضحى، أو سنة الفجر، أو سنة الظهر القبلية، أو البعدية، أو سنة العصر، أو سنة المغرب. لكل سنة خانتها.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="v-duel" class="view" hidden>
+    <div class="duel-grid">
+      <div class="card">
+        <h2>مبارزة الفرق</h2>
+        <p class="muted" style="margin:0">طالب من كل فريق. تدور العجلة على سورة وآية، فيقرأ المعلم أول الآية ويكمل الطالب، أو يسأل: «من أي سورة؟». الأسبق بالجواب الصحيح يكسب ٥٠ نقطة لفريقه.</p>
+        <div class="vs"><select id="d-a" aria-label="الفريق الأول"></select><span class="v">ضد</span><select id="d-b" aria-label="الفريق الثاني"></select><button id="d-rand" class="btn" type="button">قرعة</button></div>
+        <label class="row"><span>المقرر: من سورة الناس إلى سورة</span><select id="d-to" class="sel"></select></label>
+        <div class="wheel" aria-live="polite"><span id="d-s" class="s">جاهزون؟</span><span id="d-ay" class="a">اضغط «دوّر العجلة»</span></div>
+        <button id="d-spin" class="btn gold" type="button" style="padding:12px;font-size:1.1rem">دوّر العجلة</button>
+        <div class="win"><button id="d-wa" type="button"></button><button id="d-wb" type="button"></button></div>
+        <p id="d-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card"><h2>مبارزات هذا الأسبوع</h2><ul id="d-log" class="today"></ul></div>
+    </div>
+  </section>
+
+  <section id="v-students" class="view" hidden>
+    <div class="card">
+      <h2>الطلاب ومستوياتهم في الموسم</h2>
+      <div class="tbl-wrap"><table><thead><tr><th>الطالب</th><th>الفريق</th><th>المستوى</th><th>نقاط الموسم</th><th>هذا الأسبوع</th><th>إلى المستوى التالي</th></tr></thead><tbody id="s-body"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="v-rules" class="view" hidden>
+    <div class="rules">
+      <div class="card wide">
+        <h2>فكرة الدوري</h2>
+        <p>يتنافس طلاب نابغة في فرق تحمل أسماء الصحابة الذين أمر النبي ﷺ بأخذ القرآن عنهم، ومعهم زيد بن ثابت كاتب الوحي:</p>
+        <p class="hadith">«استقرئوا القرآن من أربعة: من عبد الله بن مسعود، وسالم مولى أبي حذيفة، وأُبيّ بن كعب، ومعاذ بن جبل» متفق عليه.</p>
+        <p>كل تسميع عند المعلم، وكل التزام بقواعد البرنامج وأدب حسن، وكل سنة يصليها، يصنع نقاطًا للطالب نفسه (فيرتقي في مستواه) ولفريقه (فيتقدم في السباق). السباق يبدأ من الصفر كل أحد، والموسم يجمع الأسابيع كلها.</p>
+      </div>
+      <div class="card">
+        <h2>كيف تُكسب النقاط</h2>
+        <table class="pts-tbl"><tbody>
+          <tr><td>كل نصف صفحة حفظ جديد (الربع بنصفها)</td><td>١٠٠</td></tr>
+          <tr><td>كل ١٠ صفحات مراجعة (الصفحة بعشر)</td><td>١٠٠</td></tr>
+          <tr><td>تسميع متقن بلا خطأ</td><td>+٢٠٪</td></tr>
+          <tr><td>إتمام الورد المقرر للطالب في يومه</td><td>٥٠</td></tr>
+          <tr><td>سرد جزء كامل في جلسة واحدة</td><td>٣٠٠</td></tr>
+          <tr><td>الالتزام بقواعد البرنامج في يومه</td><td>٢٠٠</td></tr>
+          <tr><td>الأدب والأخلاق في يومه</td><td>٢٠٠</td></tr>
+          <tr><td>كل سنة: الضحى، والفجر، والظهر القبلية، والظهر البعدية، والعصر، والمغرب</td><td>٥٠ لكل سنة</td></tr>
+          <tr><td>يوم الفريق الكامل: سمّع كل أعضاء الفريق في اليوم نفسه</td><td>٢٠٠ للفريق</td></tr>
+          <tr><td>الفوز في المبارزة</td><td>٥٠ للفريق</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card">
+        <h2>قواعد العدل</h2>
+        <ul>
+          <li>لا تُحتسب نقطة إلا بتسميع عند المعلم. التسميع الضعيف يُعاد ولا يُسجّل حتى يُتقن.</li>
+          <li>نقاط «الورد المقرر» تجعل الطالب الذي ورده ربع صفحة شريكًا حقيقيًا في فوز فريقه.</li>
+          <li>لا تُخصم نقطة أبدًا بعد أن كسبها الطالب. المخالفات والغياب يعالجها ميثاق نابغة، لا هذا الدوري.</li>
+          <li>نقاط الأدب والسنن تدخل في المجموع، ولا تُعرض تفاصيلها على اللوحة.</li>
+          <li>الفرق متقاربة في العدد والمستوى. إن اختلف العدد عُدِّل مجموع الفريق الأصغر بالنسبة.</li>
+          <li>يُعلن ترتيب الفرق، أما الأفراد فيُعلن منهم نجوم الأسبوع الثلاثة فقط، ولكل طالب مستواه.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>المستويات الفردية في الموسم</h2>
+        <div id="lv-list" class="levels"></div>
+        <p class="muted">من يرتقي مستوى يُعلن اسمه على اللوحة فور تسجيل تسميعه.</p>
+      </div>
+      <div class="card">
+        <h2>إيقاع الأسبوع</h2>
+        <ul>
+          <li><b>الأحد إلى الأربعاء:</b> التسميع اليومي في الحلقة، والنقاط تظهر على اللوحة مباشرة.</li>
+          <li><b>الخميس:</b> يوم المبارزات بين الفرق في مراجعة الأسبوع، ثم إعلان فريق الأسبوع ونجومه.</li>
+          <li><b>آخر الشهر:</b> إعلان المستويات الجديدة.</li>
+          <li><b>آخر الفصل:</b> فريق الموسم، ومن بلغ مستوى «النابغة».</li>
+        </ul>
+      </div>
+      <div class="card wide">
+        <h2>الجوائز</h2>
+        <ul>
+          <li><b>فريق الأسبوع:</b> يحمل راية الدوري في أسبوعه، ويختار لعبة وقت اللعب يوم الخميس.</li>
+          <li><b>نجوم الأسبوع:</b> تُذكر أسماؤهم في رسالة الأسرة الأسبوعية.</li>
+          <li><b>المستويات:</b> شارة بلون المستوى يلبسها الطالب، وشهادة لمن بلغ «المتميز» و«النابغة».</li>
+          <li><b>فريق الموسم:</b> رحلة أو جائزة جماعية في حفل ختام الفصل.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-setup" class="view" hidden>
+    <div class="setup">
+      <div class="card">
+        <h2>الفرق</h2>
+        <div id="t-list" class="view" style="gap:8px"></div>
+        <div class="row" id="t-create"><span>عدد الفرق</span><select id="t-n" class="sel"><option>٢</option><option>٣</option><option selected>٤</option><option>٥</option></select><button id="t-make" class="btn primary" type="button">أنشئ الفرق</button></div>
+        <p id="t-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card">
+        <h2>إضافة الطلاب</h2>
+        <p class="muted" style="margin:0">اكتب اسمًا في كل سطر. التوزيع التلقائي يضع كل طالب في الفريق الأقل عددًا، ويمكنك نقله بعد ذلك.</p>
+        <textarea id="a-names" aria-label="أسماء الطلاب"></textarea>
+        <div class="row"><select id="a-team" class="sel" aria-label="الفريق"></select><button id="a-add" class="btn primary" type="button">أضف الطلاب</button></div>
+        <p id="a-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card">
+        <h2>بداية الموسم</h2>
+        <p class="muted" style="margin:0">نقاط الموسم تُحسب من هذا التاريخ. اتركه فارغًا لحساب كل النقاط.</p>
+        <div class="row"><input id="set-start" type="date" class="sel"><button id="set-save" class="btn" type="button">احفظ</button></div>
+        <p id="set-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card" style="grid-column:1/-1">
+        <h2>الطلاب في الفرق</h2>
+        <div class="tbl-wrap"><table><thead><tr><th>الطالب</th><th>الفريق</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="gate" class="pop" hidden><form id="gate-form" class="pop-card" style="--c:var(--green);display:flex;flex-direction:column;gap:12px;text-align:right">
+  <h2>دوري الحُفّاظ</h2><p class="muted" style="margin:0">أدخل رمز الدخول الذي أعطاك إياه مدير البرنامج.</p>
+  <input id="gate-pin" class="search" inputmode="numeric" autocomplete="off" aria-label="رمز الدخول">
+  <button id="gate-go" class="btn primary" type="submit">دخول</button><p id="gate-msg" class="msg" role="status"></p></form></div>
+<div id="pop" class="pop" hidden><div id="pop-card" class="pop-card"></div></div>
+
+<script>
+(() => {
+const TEAM_DEF = [
+  ['t1','فريق ابن مسعود','#2F7FC1'],['t2','فريق أُبيّ بن كعب','#E0702C'],
+  ['t3','فريق معاذ بن جبل','#7B4FB5'],['t4','فريق سالم مولى أبي حذيفة','#2E9A5A'],['t5','فريق زيد بن ثابت','#C2414B']];
+const LEVELS = [['انطلق',0,'#7A8A84'],['الأساس',1000,'#3FA34D'],['الصاعد',3000,'#2F7FC1'],['المثابر',6000,'#7B4FB5'],['المتميز',10000,'#EE7A2D'],['النابغة',15000,'#C9961A']];
+const SURAHS = [[67,'الملك',30],[68,'القلم',52],[69,'الحاقة',52],[70,'المعارج',44],[71,'نوح',28],[72,'الجن',28],[73,'المزمل',20],[74,'المدثر',56],[75,'القيامة',40],[76,'الإنسان',31],[77,'المرسلات',50],[78,'النبأ',40],[79,'النازعات',46],[80,'عبس',42],[81,'التكوير',29],[82,'الانفطار',19],[83,'المطففين',36],[84,'الانشقاق',25],[85,'البروج',22],[86,'الطارق',17],[87,'الأعلى',19],[88,'الغاشية',26],[89,'الفجر',30],[90,'البلد',20],[91,'الشمس',15],[92,'الليل',21],[93,'الضحى',11],[94,'الشرح',8],[95,'التين',8],[96,'العلق',19],[97,'القدر',5],[98,'البينة',8],[99,'الزلزلة',8],[100,'العاديات',11],[101,'القارعة',11],[102,'التكاثر',8],[103,'العصر',3],[104,'الهمزة',9],[105,'الفيل',5],[106,'قريش',4],[107,'الماعون',7],[108,'الكوثر',3],[109,'الكافرون',6],[110,'النصر',3],[111,'المسد',5],[112,'الإخلاص',4],[113,'الفلق',5],[114,'الناس',6]];
+const MEDALS = ['#E2B93B','#C8CED3','#D39A6A'];
+const FULL_DAY = 200, DUEL = 50;
+const DAILY = [['rules','الالتزام بالقواعد',200],['adab','الأدب والأخلاق',200],['duha','الضحى',50],['fajr','سنة الفجر',50],['zq','سنة الظهر القبلية',50],['zb','سنة الظهر البعدية',50],['asr','سنة العصر',50],['mgh','سنة المغرب',50]];
+// نقاط اليوم تُحسب من الخانات عند القراءة، فلا يمحو مسؤولٌ خانةَ غيره
+const ptsOf = e => e.kind === 'daily' ? DAILY.filter(d => e[d[0]]).reduce((a, d) => a + d[2], 0) : (e.pts || 0);
+const isTasmee = e => !e.kind || e.kind === 'tasmee';
+
+const $ = id => document.getElementById(id);
+const nf = new Intl.NumberFormat('ar-SA-u-nu-arab');
+const n = x => nf.format(x);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const today = () => ymd(new Date());
+function weekRange(){ const d = new Date(); d.setHours(12); const s = new Date(d); s.setDate(d.getDate() - d.getDay()); const e = new Date(s); e.setDate(s.getDate() + 6); return [ymd(s), ymd(e)]; }
+const dayName = s => new Date(s + 'T12:00').toLocaleDateString('ar-SA-u-ca-gregory-nu-arab', {weekday:'long', day:'numeric', month:'long'});
+
+// النقاط: الربع ٥٠، الصفحة مراجعةً ١٠، الإتقان +٢٠٪ على الحفظ والمراجعة
+function calcPts(f){
+  if (f.quality === 'redo') return 0;
+  let base = f.newQ * 50 + f.rev * 10;
+  if (f.quality === 'top') base = Math.round(base * 1.2);
+  return base + (f.ward ? 50 : 0) + (f.sard ? 300 : 0);
+}
+console.assert(calcPts({newQ:2,rev:10,quality:'good'}) === 200 && calcPts({newQ:2,rev:10,quality:'top',ward:true}) === 290 && calcPts({newQ:4,rev:0,quality:'redo'}) === 0, 'calcPts');
+
+function pagesText(q){
+  if (!q) return 'لا شيء';
+  const w = Math.floor(q/4), r = q % 4, part = ['','ربع','نصف','ثلاثة أرباع'][r];
+  if (!w) return part + ' صفحة';
+  const whole = w === 1 ? 'صفحة' : w === 2 ? 'صفحتان' : n(w) + (w <= 10 ? ' صفحات' : ' صفحة');
+  return r ? whole + ' و' + part : whole;
+}
+const revText = p => !p ? 'لا شيء' : p === 1 ? 'صفحة' : p === 2 ? 'صفحتان' : n(p) + (p <= 10 ? ' صفحات' : ' صفحة');
+function levelOf(p){ let i = 0; LEVELS.forEach((l,k) => { if (p >= l[1]) i = k; }); return i; }
+function entryText(e){
+  if (e.kind === 'duel') return 'فوز في المبارزة';
+  const a = [];
+  if (e.newQ) a.push(pagesText(e.newQ) + ' حفظ');
+  if (e.rev) a.push(revText(e.rev) + ' مراجعة');
+  if (e.sard) a.push('سرد جزء');
+  if (e.ward && !a.length) a.push('أتم ورده');
+  return a.join(' و') + (e.quality === 'top' ? ' · متقن' : '');
+}
+
+const S = { teams: [], students: [], entries: [], settings: {}, demo: true, db: null, range: 'week', ready: false };
+const teamById = id => S.teams.find(t => t.id === id);
+const studentById = id => S.students.find(s => s.id === id);
+
+// ---- الحساب ----
+function inRange(date, r){ return (!r[0] || date >= r[0]) && (!r[1] || date <= r[1]); }
+function seasonRange(){ return [S.settings.start || '', '']; }
+function compute(r){
+  const stu = {}; S.students.forEach(s => stu[s.id] = 0);
+  const duel = {}, daySet = {};
+  for (const e of S.entries){
+    if (!inRange(e.date, r)) continue;
+    if (e.kind === 'duel'){ duel[e.team] = (duel[e.team] || 0) + (e.pts || 0); continue; }
+    if (!(e.sid in stu)) continue;
+    stu[e.sid] += ptsOf(e);
+    if (isTasmee(e)) (daySet[e.date] ||= new Set()).add(e.sid);
+  }
+  const sizes = S.teams.map(t => S.students.filter(s => s.team === t.id).length);
+  const maxSize = Math.max(1, ...sizes);
+  const teams = S.teams.map((t, i) => {
+    const mem = S.students.filter(s => s.team === t.id);
+    const raw = mem.reduce((a, s) => a + stu[s.id], 0);
+    const full = mem.length ? Object.values(daySet).filter(set => mem.every(s => set.has(s.id))).length : 0;
+    const score = (mem.length ? Math.round(raw * maxSize / mem.length) : 0) + full * FULL_DAY + (duel[t.id] || 0);
+    return { ...t, size: mem.length, score, full };
+  }).sort((a, b) => b.score - a.score);
+  return { stu, teams };
+}
+
+// ---- العرض ----
+function renderBoard(){
+  const wk = weekRange(), r = S.range === 'week' ? wk : seasonRange();
+  $('b-sub').textContent = S.range === 'week' ? 'من ' + dayName(wk[0]) + ' إلى ' + dayName(wk[1]) + ' · يبدأ السباق من الصفر كل أحد' : (S.settings.start ? 'منذ ' + dayName(S.settings.start) : 'كل النقاط منذ البداية');
+  const { stu, teams } = compute(r);
+  const top = Math.max(1, ...teams.map(t => t.score));
+  $('lanes').innerHTML = teams.length ? teams.map((t, i) => `<li class="lane${i === 0 && t.score > 0 ? ' first' : ''}" style="--c:${t.color}">
+    <span class="rank">${n(i+1)}</span>
+    <div class="who"><b>${esc(t.name)}${i === 0 && t.score > 0 ? '<span class="crown">في الصدارة</span>' : ''}</b>
+      <div class="track"><div class="fill" style="width:${Math.max(3, t.score / top * 100)}%"></div></div>
+      <small>${n(t.size)} طلاب${t.full ? ' · ' + n(t.full) + ' يوم فريق كامل' : ''}</small></div>
+    <strong class="score num">${n(t.score)}</strong></li>`).join('') : '<li class="empty">أنشئ الفرق من «الإعداد».</li>';
+  $('stars-t').textContent = S.range === 'week' ? 'نجوم الأسبوع' : 'نجوم الموسم';
+  const stars = S.students.map(s => ({ s, p: stu[s.id] })).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 3);
+  $('stars').innerHTML = stars.length ? stars.map((x, i) => { const t = teamById(x.s.team);
+    return `<li><span class="medal" style="background:${MEDALS[i]}">${n(i+1)}</span><span><b>${esc(x.s.name)}</b><br><small class="muted"><span class="dot" style="--c:${t?.color || '#999'}"></span>${esc(t?.name || '')}</small></span><b class="num">${n(x.p)}</b></li>`; }).join('')
+    : '<li class="empty">لم يُسجَّل تسميع في هذه الفترة بعد.</li>';
+  const feed = S.entries.filter(e => e.kind !== 'daily').sort((a, b) => (b.at || 0) - (a.at || 0)).slice(0, 7);
+  $('feed').innerHTML = feed.length ? feed.map(e => { const s = studentById(e.sid), t = teamById(e.kind === 'duel' ? e.team : s?.team);
+    return `<li><span class="pts num">+${n(e.pts)}</span><span style="min-width:0"><b><span class="dot" style="--c:${t?.color || '#999'}"></span>${esc(e.kind === 'duel' ? t?.name : s?.name || 'طالب محذوف')}</b> <span class="what">${esc(entryText(e))}</span></span></li>`; }).join('')
+    : '<li class="empty">ستظهر هنا كل نقطة لحظة تسجيلها.</li>';
+}
+
+function renderStudents(){
+  const s1 = compute(seasonRange()).stu, w = compute(weekRange()).stu;
+  const rows = [...S.students].sort((a, b) => s1[b.id] - s1[a.id]);
+  $('s-body').innerHTML = rows.length ? rows.map(s => { const t = teamById(s.team), p = s1[s.id], li = levelOf(p), L = LEVELS[li], nx = LEVELS[li+1];
+    const pct = nx ? Math.round((p - L[1]) / (nx[1] - L[1]) * 100) : 100;
+    return `<tr><td><b>${esc(s.name)}</b></td><td><span class="dot" style="--c:${t?.color || '#999'}"></span>${esc(t?.name || '—')}</td>
+      <td><span class="badge" style="--lc:${L[2]}">${L[0]}</span></td><td class="num"><b>${n(p)}</b></td><td class="num">${n(w[s.id])}</td>
+      <td>${nx ? `<div class="prog" style="--lc:${nx[2]}" title="${pct}%"><i style="width:${pct}%"></i></div><small class="muted">${n(nx[1] - p)} إلى ${nx[0]}</small>` : '<b>بلغ القمة</b>'}</td></tr>`; }).join('')
+    : '<tr><td colspan="10" class="empty">لا طلاب بعد. أضفهم من «الإعداد».</td></tr>';
+}
+
+// ---- التسجيل ----
+const F = { sid: null, newQ: 0, rev: 0 };
+function formVals(){ return { newQ: F.newQ, rev: F.rev, quality: document.querySelector('input[name=q]:checked').value, ward: $('r-ward').checked, sard: $('r-sard').checked }; }
+function renderForm(){
+  const v = formVals(), p = calcPts(v), s = studentById(F.sid);
+  $('o-new').textContent = pagesText(F.newQ); $('o-rev').textContent = revText(F.rev);
+  $('r-total').textContent = n(p);
+  $('r-name').textContent = s ? s.name : 'لم تختر طالبًا بعد';
+  const empty = !(v.newQ || v.rev || v.ward || v.sard);
+  $('r-save').disabled = S.demo || !s || p <= 0;
+  if (v.quality === 'redo') setMsg('r-msg', 'يُعاد التسميع ولا تُسجَّل نقاط حتى يُتقن.', 'err');
+  else if ($('r-msg').dataset.kind !== 'good') setMsg('r-msg', S.demo ? 'أضف الطلاب من «الإعداد» ليبدأ التسجيل.' : !s ? 'اختر الطالب من القائمة.' : empty ? 'حدّد ما سمّعه الطالب.' : '', '');
+}
+function setMsg(id, text, kind){ const el = $(id); el.textContent = text; el.className = 'msg' + (kind ? ' ' + kind : ''); el.dataset.kind = kind || ''; }
+function renderPicker(){
+  const q = $('r-search').value.trim();
+  const lv = compute(seasonRange()).stu;
+  $('r-students').innerHTML = S.teams.map(t => {
+    const mem = S.students.filter(s => s.team === t.id && (!q || s.name.includes(q)));
+    if (!mem.length) return '';
+    return `<div class="team-block" style="--c:${t.color}"><h3>${esc(t.name)}</h3><div class="chips">${mem.map(s =>
+      `<button type="button" class="chip" data-sid="${s.id}" aria-pressed="${s.id === F.sid}" style="--c:${t.color}">${esc(s.name)}<span class="lv">${LEVELS[levelOf(lv[s.id])][0]}</span></button>`).join('')}</div></div>`;
+  }).join('') || '<p class="empty">لا نتائج.</p>';
+}
+function renderToday(){
+  const d = $('r-date').value || today();
+  $('r-today-t').textContent = 'تسميعات ' + (d === today() ? 'اليوم' : dayName(d));
+  const list = S.entries.filter(e => e.date === d && isTasmee(e)).sort((a, b) => (b.at || 0) - (a.at || 0));
+  $('r-today').innerHTML = list.length ? list.map(e => { const s = studentById(e.sid), t = teamById(s?.team);
+    return `<li><span class="dot" style="--c:${t?.color || '#999'}"></span><b>${esc(s?.name || 'طالب محذوف')}</b><span class="muted">${esc(entryText(e))}</span><b class="num" style="color:var(--ok)">+${n(e.pts)}</b>${S.demo ? '' : `<button type="button" class="x" data-del="${e.id}">${$('r-today').dataset.arm === e.id ? 'اضغط للتأكيد' : 'تراجع'}</button>`}</li>`; }).join('')
+    : '<li class="empty">لا تسميع مسجّل في هذا اليوم.</li>';
+}
+function resetForm(){ F.newQ = 0; F.rev = 0; document.querySelector('input[name=q][value=good]').checked = true; ['r-ward','r-sard'].forEach(i => $(i).checked = false); }
+
+// ---- نقاط اليوم ----
+function renderDaily(){
+  const d = $('y-date').value || today();
+  $('y-title').textContent = 'نقاط ' + (d === today() ? 'اليوم' : dayName(d));
+  const byId = {}; S.entries.forEach(e => { if (e.kind === 'daily' && e.date === d) byId[e.sid] = e; });
+  $('y-body').innerHTML = S.teams.map(t => {
+    const mem = S.students.filter(s => s.team === t.id).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+    if (!mem.length) return '';
+    return `<tr class="grp" style="--c:${t.color}"><td colspan="10">${esc(t.name)}</td></tr>` + mem.map(s => { const e = byId[s.id] || {};
+      return `<tr><td><b>${esc(s.name)}</b></td>${DAILY.map(([k, l]) => `<td><button type="button" class="tick" data-y="${k}" data-sid="${s.id}" aria-pressed="${!!e[k]}" aria-label="${l}: ${esc(s.name)}"${S.demo ? ' disabled' : ''}>✓</button></td>`).join('')}<td class="num"><b>${n(ptsOf({ kind: 'daily', ...e }))}</b></td></tr>`; }).join('');
+  }).join('') || '<tr><td colspan="10" class="empty">لا طلاب بعد. أضفهم من «الإعداد».</td></tr>';
+}
+
+// ---- المبارزة ----
+const D = { a: null, b: null, spinning: false };
+function renderDuel(){
+  const opts = S.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+  for (const k of ['a','b']){ const el = $('d-' + k); el.innerHTML = opts; if (D[k] && teamById(D[k])) el.value = D[k]; else { D[k] = S.teams[k === 'a' ? 0 : 1]?.id || null; el.value = D[k] || ''; } }
+  for (const k of ['a','b']){ const t = teamById(D[k]), b = $('d-w' + k); b.style.setProperty('--c', t?.color || '#999'); b.textContent = t ? 'فاز ' + t.name : '—'; b.disabled = S.demo || !t; }
+  const wk = weekRange();
+  const log = S.entries.filter(e => e.kind === 'duel' && inRange(e.date, wk)).sort((a, b) => (b.at || 0) - (a.at || 0));
+  $('d-log').innerHTML = log.length ? log.map(e => { const t = teamById(e.team), o = teamById(e.vs);
+    return `<li><span class="dot" style="--c:${t?.color || '#999'}"></span><b>${esc(t?.name || '')}</b><span class="muted">على ${esc(o?.name || '')}${e.q ? ' · ' + esc(e.q) : ''}</span><b class="num" style="color:var(--ok)">+${n(e.pts)}</b>${S.demo ? '' : `<button type="button" class="x" data-del="${e.id}">تراجع</button>`}</li>`; }).join('')
+    : '<li class="empty">لم تُسجَّل مبارزة هذا الأسبوع.</li>';
+}
+function spin(){
+  if (D.spinning) return;
+  const to = +$('d-to').value, pool = SURAHS.filter(s => s[0] >= to);
+  const pick = () => pool[Math.floor(Math.random() * pool.length)];
+  const final = pick(), ayah = 1 + Math.floor(Math.random() * final[2]);
+  const show = s => { $('d-s').textContent = 'سورة ' + s[1]; };
+  const done = () => { show(final); $('d-ay').textContent = 'الآية ' + n(ayah) + ' من ' + n(final[2]); D.last = 'سورة ' + final[1] + ' ' + n(ayah); D.spinning = false; };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return done();
+  D.spinning = true; $('d-ay').textContent = '…'; let t = 40, steps = 0;
+  const tick = () => { show(pick()); steps++; t *= 1.13; if (steps < 22) setTimeout(tick, t); else done(); };
+  tick();
+}
+
+// ---- الإعداد ----
+function renderSetup(){
+  $('t-create').hidden = S.teams.length > 0;
+  $('t-list').innerHTML = S.teams.length ? S.teams.map(t => `<div class="row"><span class="dot" style="--c:${t.color}"></span><b>${esc(t.name)}</b><span class="muted">${n(S.students.filter(s => s.team === t.id).length)} طلاب</span></div>`).join('')
+    : '<p class="muted" style="margin:0">لم تُنشأ الفرق بعد. خمسة أسماء: ابن مسعود، وأُبيّ بن كعب، ومعاذ بن جبل، وسالم مولى أبي حذيفة، وزيد بن ثابت؛ يؤخذ منها العدد الذي تختاره.</p>';
+  $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + S.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+  $('set-start').value = S.settings.start || '';
+  const opts = id => S.teams.map(t => `<option value="${t.id}"${t.id === id ? ' selected' : ''}>${esc(t.name)}</option>`).join('');
+  const arm = $('m-body').dataset.arm;
+  $('m-body').innerHTML = S.demo ? '<tr><td colspan="3" class="empty">لا طلاب بعد.</td></tr>' : [...S.students].sort((a, b) => (a.team || '').localeCompare(b.team || '') || a.name.localeCompare(b.name, 'ar')).map(s =>
+    `<tr><td><b>${esc(s.name)}</b></td><td><select class="sel" data-move="${s.id}" aria-label="فريق ${esc(s.name)}">${opts(s.team)}</select></td><td><button type="button" class="btn" data-rm="${s.id}" style="color:var(--danger)">${arm === s.id ? 'تأكيد الحذف' : 'حذف'}</button></td></tr>`).join('');
+}
+
+function renderAll(){
+  $('banner').hidden = !S.demo && S.db;
+  if (!S.db) $('banner').innerHTML = S.ready ? 'هذه نسخة عرض فقط: سجّل دخولك في claude.ai لترى النقاط الحقيقية وتسجّلها.' : 'جارٍ تحميل نقاط الدوري…';
+  else if (S.demo) $('banner').innerHTML = 'عرض تجريبي بأسماء وهمية. ابدأ من <a href="#setup">الإعداد</a>: أنشئ الفرق وأضف أسماء الطلاب، فتختفي البيانات التجريبية.';
+  renderBoard(); renderStudents(); renderPicker(); renderForm(); renderToday(); renderDaily(); renderDuel(); renderSetup();
+  $('lv-list').innerHTML = LEVELS.slice(1).map(l => `<div style="--lc:${l[2]}">${l[0]}<small class="num">${n(l[1])} نقطة</small></div>`).join('');
+}
+
+// ---- بيانات تجريبية في الذاكرة فقط ----
+function demoData(){
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const teams = TEAM_DEF.slice(0, 4).map(([id, name, color]) => ({ id, name, color }));
+  const students = Array.from({ length: 16 }, (_, i) => ({ id: 'd' + i, name: 'طالب تجريبي ' + n(i + 1), team: teams[i % 4].id }));
+  const entries = []; const wk = weekRange(); const s = new Date(wk[0] + 'T12:00'); const lastDay = Math.min(new Date().getDay(), 4);
+  for (let d = 0; d <= lastDay; d++){
+    const date = ymd(new Date(s.getTime() + d * 864e5));
+    students.forEach((st, i) => { if (rnd() < .2) return;
+      const f = { newQ: 1 + Math.floor(rnd() * 4), rev: [5, 10, 10, 15, 20][Math.floor(rnd() * 5)], quality: rnd() < .4 ? 'top' : 'good', ward: rnd() < .7 };
+      entries.push({ id: 'e' + d + i, sid: st.id, date, ...f, pts: calcPts(f), at: d * 1e6 + i });
+      entries.push({ id: 'y' + d + i, kind: 'daily', sid: st.id, date, rules: rnd() < .85, adab: rnd() < .85, duha: rnd() < .5, fajr: rnd() < .6, zq: rnd() < .5, zb: rnd() < .7, asr: rnd() < .4, mgh: rnd() < .5, at: 0 }); });
+  }
+  entries.push({ id: 'dd', kind: 'duel', team: 't2', vs: 't3', date: today(), pts: DUEL, at: 9e9, q: 'سورة الفجر ١٥' });
+  return { teams, students, entries };
+}
+// البيانات الحقيقية تُحفظ في R، والعرض يقرأ من S
+const R = { teams: [], students: [], entries: [], settings: {} };
+function sync(){
+  S.demo = !R.students.length;
+  const d = S.demo ? demoData() : null;
+  S.teams = S.demo ? (R.teams.length ? R.teams : d.teams) : R.teams;
+  S.students = S.demo ? d.students.map((s, i) => ({ ...s, team: S.teams[i % S.teams.length].id })) : R.students;
+  S.entries = S.demo ? d.entries : R.entries;
+  S.settings = R.settings;
+  if (F.sid && !studentById(F.sid)) F.sid = null;
+  renderAll();
+}
+
+// ---- إعلان النقاط على اللوحة ----
+let popTimer = null; const popQ = [];
+function announce(e){
+  if (e.kind === 'daily') return;
+  const s = studentById(e.sid), t = teamById(e.kind === 'duel' ? e.team : s?.team); if (!t) return;
+  let lvl = '';
+  if (e.kind !== 'duel'){
+    const after = compute(seasonRange()).stu[e.sid] || 0, before = after - (e.pts || 0);
+    if (levelOf(after) > levelOf(before)) lvl = `<div class="lvl">ارتقى إلى مستوى «${LEVELS[levelOf(after)][0]}»</div>`;
+  }
+  popQ.push(`<div class="big num">+${n(e.pts)}</div><div class="nm">${esc(e.kind === 'duel' ? t.name : s.name)}</div><div class="muted">${esc(e.kind === 'duel' ? 'فاز في المبارزة' : t.name + ' · ' + entryText(e))}</div>${lvl}`);
+  if (!popTimer) nextPop(t.color);
+}
+function nextPop(color){
+  const h = popQ.shift(); if (!h){ $('pop').hidden = true; popTimer = null; return; }
+  $('pop-card').innerHTML = h; if (color) $('pop-card').style.setProperty('--c', color); $('pop').hidden = false;
+  popTimer = setTimeout(() => nextPop(), 2600);
+}
+$('pop').addEventListener('click', () => { clearTimeout(popTimer); popQ.length = 0; popTimer = null; $('pop').hidden = true; });
+
+// ---- التنقل ----
+const VIEWS = ['board','record','daily','duel','students','rules','setup'];
+function route(){
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'board';
+  VIEWS.forEach(k => $('v-' + k).hidden = k !== v);
+  document.querySelectorAll('nav a').forEach(a => a.getAttribute('href') === '#' + v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+}
+addEventListener('hashchange', route);
+
+// ---- الأحداث ----
+$('rg-week').onclick = () => { S.range = 'week'; $('rg-week').setAttribute('aria-pressed', 'true'); $('rg-season').setAttribute('aria-pressed', 'false'); renderBoard(); };
+$('rg-season').onclick = () => { S.range = 'season'; $('rg-season').setAttribute('aria-pressed', 'true'); $('rg-week').setAttribute('aria-pressed', 'false'); renderBoard(); };
+$('fs').onclick = () => { const p = document.fullscreenElement ? document.exitFullscreen?.() : document.documentElement.requestFullscreen?.(); p?.catch?.(() => {}); };
+$('r-search').oninput = renderPicker;
+$('r-students').onclick = ev => { const b = ev.target.closest('[data-sid]'); if (!b) return; F.sid = b.dataset.sid; setMsg('r-msg', '', ''); renderPicker(); renderForm(); };
+$('r-form').addEventListener('click', ev => { const b = ev.target.closest('[data-k]'); if (!b) return;
+  const k = b.dataset.k; F[k] = Math.max(0, Math.min(k === 'newQ' ? 40 : 200, F[k] + +b.dataset.d)); setMsg('r-msg', '', ''); renderForm(); });
+$('r-form').addEventListener('change', () => { setMsg('r-msg', '', ''); renderForm(); });
+$('r-date').onchange = renderToday;
+$('r-form').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const v = formVals(), pts = calcPts(v), s = studentById(F.sid);
+  if (!S.db || S.demo || !s || pts <= 0) return;
+  $('r-save').disabled = true;
+  try {
+    await S.db.collection('entries').add({ kind: 'tasmee', sid: s.id, date: $('r-date').value || today(), newQ: v.newQ, rev: v.rev, quality: v.quality, ward: v.ward, sard: v.sard, pts, at: Date.now() });
+    setMsg('r-msg', 'سُجّلت ' + n(pts) + ' نقطة لـ' + s.name + '.', 'good'); resetForm(); F.sid = null; renderPicker(); renderForm();
+  } catch (e) { setMsg('r-msg', e?.code === 'not_granted' || e?.code === 'permission_denied' ? 'لا تملك صلاحية التسجيل. اطلب من المدير أن يشاركك الصفحة بصلاحية «مساهم».' : 'تعذّر الحفظ، حاول مرة أخرى (' + (e?.code || 'خطأ') + ').', 'err'); renderForm(); }
+});
+async function delEntry(id, listEl){
+  if (listEl.dataset.arm !== id){ listEl.dataset.arm = id; renderToday(); renderDuel(); const b = listEl.querySelector(`[data-del="${id}"]`); if (b) b.textContent = 'اضغط للتأكيد'; return; }
+  listEl.dataset.arm = '';
+  try { await S.db.doc('entries/' + id).delete(); } catch (e) { setMsg(listEl === $('r-today') ? 'r-msg' : 'd-msg', 'تعذّر الحذف (' + (e?.code || 'خطأ') + ').', 'err'); }
+}
+$('r-today').onclick = ev => { const b = ev.target.closest('[data-del]'); if (b && S.db) delEntry(b.dataset.del, $('r-today')); };
+$('d-log').onclick = ev => { const b = ev.target.closest('[data-del]'); if (b && S.db) delEntry(b.dataset.del, $('d-log')); };
+$('y-date').onchange = renderDaily;
+$('y-body').onclick = async ev => {
+  const b = ev.target.closest('[data-y]'); if (!b || !S.db || S.demo) return;
+  const k = b.dataset.y, sid = b.dataset.sid, date = $('y-date').value || today(), id = 'd_' + sid + '_' + date;
+  const cur = R.entries.find(e => e.id === id);
+  b.setAttribute('aria-pressed', String(!(cur && cur[k])));
+  try {
+    if (cur) await S.db.doc('entries/' + id).update({ [k]: !cur[k] });
+    else await S.db.doc('entries/' + id).set({ kind: 'daily', sid, date, [k]: true, at: Date.now() });
+    setMsg('y-msg', '', '');
+  } catch (e) { setMsg('y-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); renderDaily(); }
+};
+$('d-a').onchange =e => { D.a = e.target.value; renderDuel(); };
+$('d-b').onchange = e => { D.b = e.target.value; renderDuel(); };
+$('d-rand').onclick = () => { if (S.teams.length < 2) return; const ids = S.teams.map(t => t.id).sort(() => Math.random() - .5); D.a = ids[0]; D.b = ids[1]; renderDuel(); };
+$('d-to').innerHTML = [...SURAHS].reverse().map(s => `<option value="${s[0]}"${s[0] === 78 ? ' selected' : ''}>${s[1]}</option>`).join('');
+$('d-spin').onclick = spin;
+for (const k of ['a','b']) $('d-w' + k).onclick = async () => {
+  if (!S.db || S.demo) return; if (D.a === D.b) return setMsg('d-msg', 'اختر فريقين مختلفين.', 'err');
+  const win = D[k], lose = D[k === 'a' ? 'b' : 'a'];
+  try { await S.db.collection('entries').add({ kind: 'duel', team: win, vs: lose, date: today(), pts: DUEL, q: D.last || '', at: Date.now() }); setMsg('d-msg', '+' + n(DUEL) + ' لـ' + teamById(win).name + '.', 'good'); }
+  catch (e) { setMsg('d-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); }
+};
+$('t-make').onclick = async () => {
+  if (!S.db) return setMsg('t-msg', 'سجّل دخولك أولًا.', 'err');
+  const cnt = '٢٣٤٥'.indexOf($('t-n').value) + 2;
+  try { await Promise.all(TEAM_DEF.slice(0, cnt).map(([id, name, color], i) => S.db.doc('teams/' + id).set({ name, color, order: i }))); setMsg('t-msg', 'أُنشئت الفرق.', 'good'); }
+  catch (e) { setMsg('t-msg', 'تعذّر الإنشاء (' + (e?.code || 'خطأ') + ').', 'err'); }
+};
+$('a-add').onclick = async () => {
+  if (!S.db) return setMsg('a-msg', 'سجّل دخولك أولًا.', 'err');
+  if (!R.teams.length) return setMsg('a-msg', 'أنشئ الفرق أولًا.', 'err');
+  const names = [...new Set($('a-names').value.split('\n').map(x => x.trim()).filter(Boolean))];
+  if (!names.length) return setMsg('a-msg', 'اكتب اسمًا واحدًا على الأقل.', 'err');
+  const fixed = $('a-team').value, count = {}; R.teams.forEach(t => count[t.id] = R.students.filter(s => s.team === t.id).length);
+  $('a-add').disabled = true;
+  try {
+    for (const name of names){
+      const team = fixed || R.teams.reduce((a, t) => count[t.id] < count[a.id] ? t : a).id; count[team]++;
+      await S.db.collection('students').add({ name, team, at: Date.now() });
+    }
+    $('a-names').value = ''; setMsg('a-msg', 'أُضيف ' + n(names.length) + ' طالبًا.', 'good');
+  } catch (e) { setMsg('a-msg', 'توقفت الإضافة (' + (e?.code || 'خطأ') + '). تحقق من القائمة.', 'err'); }
+  $('a-add').disabled = false;
+};
+$('set-save').onclick = async () => { if (!S.db) return; try { await S.db.doc('settings/main').set({ start: $('set-start').value || '' }); setMsg('set-msg', 'حُفظ.', 'good'); } catch (e) { setMsg('set-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); } };
+$('m-body').onchange = async ev => { const sel = ev.target.closest('[data-move]'); if (!sel || !S.db) return; try { await S.db.doc('students/' + sel.dataset.move).update({ team: sel.value }); } catch (e) {} };
+$('m-body').onclick = async ev => { const b = ev.target.closest('[data-rm]'); if (!b || !S.db) return; const id = b.dataset.rm, body = $('m-body');
+  if (body.dataset.arm !== id){ body.dataset.arm = id; renderSetup(); return; }
+  body.dataset.arm = ''; try { await S.db.doc('students/' + id).delete(); } catch (e) {} };
+
+// ---- التشغيل ----
+$('r-date').value = today(); $('y-date').value = today();
+route(); sync();
+// ---- نسخة GitHub: مخزن جدول Google عبر Apps Script بدل قاعدة claude.ai ----
+const SHEET_API = 'https://script.google.com/macros/s/AKfycbz9cHRLMEKYl5KuQGkCm_WQQ2_RcbZnSbbZTTjmjNI6wxYCcK_Crzmv_BTPW5CGpw_X/exec';
+function sheetDb(url, pin){
+  const docs = new Map(), subs = []; let since = 0, loaded = false, busy = false;
+  const post = body => fetch(url, { method: 'POST', body: JSON.stringify({ pin, ...body }) }).then(r => r.json());
+  const snap = (id, d) => ({ id, exists: !!d, data: () => d, metadata: { fromCache: false, hasPendingWrites: false } });
+  function emit(){
+    for (const s of subs){
+      if (s.doc){ s.cb(snap(s.path.split('/')[1], docs.get(s.path))); continue; }
+      const list = [...docs].filter(([p]) => p.startsWith(s.path + '/')).map(([p, d]) => snap(p.slice(s.path.length + 1), d));
+      const added = list.filter(x => !s.prev.has(x.id)); s.prev = new Set(list.map(x => x.id));
+      s.cb({ docs: list, size: list.length, empty: !list.length, docChanges: () => added.map(doc => ({ type: 'added', doc })) });
+    }
+  }
+  async function poll(){
+    if (busy || document.hidden) return; busy = true;
+    try {
+      // تداخل ٣٠ ثانية حتى لا يفوت تعديلٌ كُتب أثناء القراءة
+      const r = await post({ op: 'list', since: Math.max(0, since - 30000) });
+      if (r.error) throw { code: r.error };
+      let changed = !loaded;
+      for (const row of r.rows){
+        if (row.d === null){ if (docs.delete(row.p)) changed = true; }
+        else if (JSON.stringify(docs.get(row.p)) !== JSON.stringify(row.d)){ docs.set(row.p, row.d); changed = true; }
+      }
+      since = r.now; loaded = true; if (changed) emit();
+    } catch (e) { if (!loaded) subs.forEach(s => s.err?.(e)); }
+    busy = false;
+  }
+  let started = false;
+  const start = () => { if (started) return; started = true; setTimeout(poll, 0); setInterval(poll, 15000); document.addEventListener('visibilitychange', poll); };
+  async function write(op, p, d){
+    const r = await post({ op, p, d }); if (r.error) throw { code: r.error };
+    if (op === 'delete') docs.delete(p); else docs.set(p, r.d); emit();
+  }
+  const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  return {
+    check: () => post({ op: 'list', since: Date.now() }),
+    collection: name => ({
+      add: d => { const id = rid(); return write('set', name + '/' + id, d).then(() => ({ id })); },
+      onSnapshot: (cb, err) => { subs.push({ path: name, cb, err, prev: new Set() }); start(); return () => {}; } }),
+    doc: path => ({
+      set: d => write('set', path, d), update: d => write('update', path, d), delete: () => write('delete', path),
+      onSnapshot: (cb, err) => { subs.push({ doc: true, path, cb, err }); start(); return () => {}; } }),
+  };
+}
+const PIN_KEY = 'hifz-league-pin';
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+function gate(){
+  return new Promise(resolve => {
+    $('gate').hidden = false; $('gate-pin').focus();
+    $('gate-form').onsubmit = async ev => {
+      ev.preventDefault(); const pin = $('gate-pin').value.trim(); if (!pin) return;
+      $('gate-go').disabled = true; setMsg('gate-msg', 'جارٍ التحقق…', '');
+      try { const r = await sheetDb(SHEET_API, pin).check(); if (r.error) throw r; lsSet(PIN_KEY, pin); $('gate').hidden = true; resolve(pin); }
+      catch (e) { setMsg('gate-msg', e?.error === 'pin' ? 'الرمز غير صحيح.' : 'تعذّر الاتصال، تحقق من الإنترنت.', 'err'); }
+      $('gate-go').disabled = false;
+    };
+  });
+}
+function attach(db){
+  const timer = setTimeout(() => { S.ready = true; renderAll(); }, 10000);
+  S.db = db; const seen = { teams: 0, students: 0, entries: 0, settings: 0 };
+  const loaded = () => { if (Object.values(seen).every(Boolean)){ clearTimeout(timer); S.ready = true; } };
+  const fail = e => { clearTimeout(timer); S.ready = true; if (e?.code === 'pin'){ lsSet(PIN_KEY, null); location.reload(); } renderAll(); };
+  db.collection('teams').onSnapshot(q => { R.teams = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.teams = 1; loaded(); sync(); }, fail);
+  db.collection('students').onSnapshot(q => { R.students = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.students = 1; loaded(); sync(); }, fail);
+  db.collection('entries').onSnapshot(q => {
+    const fresh = seen.entries && !S.demo ? q.docChanges().filter(c => c.type === 'added' && !c.doc.metadata.fromCache && (c.doc.data().at || 0) > Date.now() - 60000).map(c => ({ id: c.doc.id, ...c.doc.data() })) : [];
+    R.entries = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.entries = 1; loaded(); sync();
+    if (location.hash.slice(1) === 'board' || !location.hash) fresh.forEach(announce);
+  }, fail);
+  db.doc('settings/main').onSnapshot(d => { R.settings = d.exists ? d.data() : {}; seen.settings = 1; loaded(); sync(); }, fail);
+}
+(async () => {
+  let db = null; try { db = await window.claude?.use?.('db'); } catch (e) {}
+  if (db) return attach(db);
+  if (!SHEET_API.startsWith('https://')){ S.ready = true; renderAll(); return; }
+  const pin = lsGet(PIN_KEY) || await gate();
+  attach(sheetDb(SHEET_API, pin));
+})();
+})();
+</script>
+
+</html>
