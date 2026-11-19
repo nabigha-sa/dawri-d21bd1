@@ -170,6 +170,11 @@ th{font-size:.85rem;color:var(--muted);font-weight:700}
 .setup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
 textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cfg-grid label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.9rem}
+.cfg-grid input,.tname,.sname{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 10px;font-weight:600;min-width:0}
+.tname{flex:1}.sname{width:100%}
+input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-radius:10px;padding:2px;background:var(--bg)}
 
 @media (max-width:820px){
   .board-foot,.rec-grid,.duel-grid,.rules,.setup{grid-template-columns:minmax(0,1fr)}
@@ -216,20 +221,20 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
         <div class="field"><span>التاريخ</span><input id="r-date" type="date" class="sel"></div>
         <div class="field"><span>الحفظ الجديد</span>
           <div class="stepper"><button type="button" data-k="newQ" data-d="-1" aria-label="أنقص ربع صفحة">−</button><output id="o-new">لا شيء</output><button type="button" data-k="newQ" data-d="1" aria-label="زد ربع صفحة">+</button></div>
-          <small class="hint">كل نصف صفحة = ١٠٠ نقطة (الربع = ٥٠)</small></div>
+          <small class="hint">كل نصف صفحة = <span data-v="half"></span> نقطة (الربع = <span data-v="newQ"></span>)</small></div>
         <div class="field"><span>المراجعة</span>
           <div class="stepper"><button type="button" data-k="rev" data-d="-1" aria-label="أنقص صفحة">−</button><output id="o-rev">لا شيء</output><button type="button" data-k="rev" data-d="1" aria-label="زد صفحة">+</button><button type="button" class="quick" data-k="rev" data-d="5">+٥</button><button type="button" class="quick" data-k="rev" data-d="10">+١٠</button></div>
-          <small class="hint">كل ١٠ صفحات = ١٠٠ نقطة (الصفحة = ١٠)</small></div>
+          <small class="hint">كل ١٠ صفحات = <span data-v="ten"></span> نقطة (الصفحة = <span data-v="rev"></span>)</small></div>
         <div class="field"><span>جودة التسميع</span>
           <div class="opts">
-            <label class="opt"><input type="radio" name="q" value="top"><span>متقن بلا خطأ (+٢٠٪)</span></label>
+            <label class="opt"><input type="radio" name="q" value="top"><span>متقن بلا خطأ (+<span data-v="top"></span>٪)</span></label>
             <label class="opt"><input type="radio" name="q" value="good" checked><span>جيد</span></label>
             <label class="opt redo"><input type="radio" name="q" value="redo"><span>يُعاد التسميع</span></label>
           </div></div>
         <div class="field"><span>الورد والإنجازات</span>
           <div class="opts">
-            <label class="opt"><input type="checkbox" id="r-ward"><span>أتمّ ورده المقرر (+٥٠)</span></label>
-            <label class="opt"><input type="checkbox" id="r-sard"><span>سرد جزءًا كاملًا في جلسة (+٣٠٠)</span></label>
+            <label class="opt"><input type="checkbox" id="r-ward"><span>أتمّ ورده المقرر (+<span data-v="ward"></span>)</span></label>
+            <label class="opt"><input type="checkbox" id="r-sard"><span>سرد جزءًا كاملًا في جلسة (+<span data-v="sard"></span>)</span></label>
           </div></div>
         <div class="total"><span>نقاط هذا التسميع</span><b id="r-total" class="num">٠</b><button id="r-save" type="submit" class="btn primary">سجّل النقاط</button></div>
         <p id="r-msg" class="msg" role="status"></p>
@@ -241,7 +246,7 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
   <section id="v-daily" class="view" hidden>
     <div class="card">
       <div class="row" style="justify-content:space-between"><h2 id="y-title">نقاط اليوم</h2><input id="y-date" type="date" class="sel" aria-label="التاريخ"></div>
-      <p class="muted" style="margin:0">خانة القواعد وخانة الأدب ٢٠٠ نقطة لكل منهما، وكل سنة ٥٠ نقطة. يضع كل مسؤول علامته في خانته، والضغط مرة ثانية يلغيها. هذه النقاط تدخل في مستوى الطالب ومجموع فريقه، ولا تظهر تفاصيلها على اللوحة.</p>
+      <p class="muted" style="margin:0">خانة القواعد <span data-v="rules"></span> نقطة، وخانة الأدب <span data-v="adab"></span>، وكل سنة <span data-v="sunnah"></span>. يضع كل مسؤول علامته في خانته، والضغط مرة ثانية يلغيها. هذه النقاط تدخل في مستوى الطالب ومجموع فريقه، ولا تظهر تفاصيلها على اللوحة.</p>
       <div class="tbl-wrap"><table class="daily"><thead><tr><th>الطالب</th><th>الالتزام بالقواعد</th><th>الأدب والأخلاق</th><th>الضحى</th><th>سنة الفجر</th><th>الظهر القبلية</th><th>الظهر البعدية</th><th>سنة العصر</th><th>سنة المغرب</th><th>النقاط</th></tr></thead><tbody id="y-body"></tbody></table></div>
       <p id="y-msg" class="msg" role="status"></p>
     </div>
@@ -259,7 +264,7 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
     <div class="duel-grid">
       <div class="card">
         <h2>مبارزة الفرق</h2>
-        <p class="muted" style="margin:0">طالب من كل فريق. تدور العجلة على سورة وآية، فيقرأ المعلم أول الآية ويكمل الطالب، أو يسأل: «من أي سورة؟». الأسبق بالجواب الصحيح يكسب ٥٠ نقطة لفريقه.</p>
+        <p class="muted" style="margin:0">طالب من كل فريق. تدور العجلة على سورة وآية، فيقرأ المعلم أول الآية ويكمل الطالب، أو يسأل: «من أي سورة؟». الأسبق بالجواب الصحيح يكسب <span data-v="duel"></span> نقطة لفريقه.</p>
         <div class="vs"><select id="d-a" aria-label="الفريق الأول"></select><span class="v">ضد</span><select id="d-b" aria-label="الفريق الثاني"></select><button id="d-rand" class="btn" type="button">قرعة</button></div>
         <label class="row"><span>المقرر: من سورة الناس إلى سورة</span><select id="d-to" class="sel"></select></label>
         <div class="wheel" aria-live="polite"><span id="d-s" class="s">جاهزون؟</span><span id="d-ay" class="a">اضغط «دوّر العجلة»</span></div>
@@ -289,16 +294,16 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
       <div class="card">
         <h2>كيف تُكسب النقاط</h2>
         <table class="pts-tbl"><tbody>
-          <tr><td>كل نصف صفحة حفظ جديد (الربع بنصفها)</td><td>١٠٠</td></tr>
-          <tr><td>كل ١٠ صفحات مراجعة (الصفحة بعشر)</td><td>١٠٠</td></tr>
-          <tr><td>تسميع متقن بلا خطأ</td><td>+٢٠٪</td></tr>
-          <tr><td>إتمام الورد المقرر للطالب في يومه</td><td>٥٠</td></tr>
-          <tr><td>سرد جزء كامل في جلسة واحدة</td><td>٣٠٠</td></tr>
-          <tr><td>الالتزام بقواعد البرنامج في يومه</td><td>٢٠٠</td></tr>
-          <tr><td>الأدب والأخلاق في يومه</td><td>٢٠٠</td></tr>
-          <tr><td>كل سنة: الضحى، والفجر، والظهر القبلية، والظهر البعدية، والعصر، والمغرب</td><td>٥٠ لكل سنة</td></tr>
-          <tr><td>يوم الفريق الكامل: سمّع كل أعضاء الفريق في اليوم نفسه</td><td>٢٠٠ للفريق</td></tr>
-          <tr><td>الفوز في المبارزة</td><td>٥٠ للفريق</td></tr>
+          <tr><td>كل نصف صفحة حفظ جديد (الربع بنصفها)</td><td><span data-v="half"></span></td></tr>
+          <tr><td>كل ١٠ صفحات مراجعة</td><td><span data-v="ten"></span></td></tr>
+          <tr><td>تسميع متقن بلا خطأ</td><td>+<span data-v="top"></span>٪</td></tr>
+          <tr><td>إتمام الورد المقرر للطالب في يومه</td><td><span data-v="ward"></span></td></tr>
+          <tr><td>سرد جزء كامل في جلسة واحدة</td><td><span data-v="sard"></span></td></tr>
+          <tr><td>الالتزام بقواعد البرنامج في يومه</td><td><span data-v="rules"></span></td></tr>
+          <tr><td>الأدب والأخلاق في يومه</td><td><span data-v="adab"></span></td></tr>
+          <tr><td>كل سنة: الضحى، والفجر، والظهر القبلية، والظهر البعدية، والعصر، والمغرب</td><td><span data-v="sunnah"></span> لكل سنة</td></tr>
+          <tr><td>يوم الفريق الكامل: سمّع كل أعضاء الفريق في اليوم نفسه</td><td><span data-v="fullDay"></span> للفريق</td></tr>
+          <tr><td>الفوز في المبارزة</td><td><span data-v="duel"></span> للفريق</td></tr>
         </tbody></table>
       </div>
       <div class="card">
@@ -344,6 +349,7 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
         <h2>الفرق</h2>
         <div id="t-list" class="view" style="gap:8px"></div>
         <div class="row" id="t-create"><span>عدد الفرق</span><select id="t-n" class="sel"><option>٢</option><option>٣</option><option selected>٤</option><option>٥</option></select><button id="t-make" class="btn primary" type="button">أنشئ الفرق</button></div>
+        <button id="t-add" class="btn" type="button" hidden>أضف فريقًا</button>
         <p id="t-msg" class="msg" role="status"></p>
       </div>
       <div class="card">
@@ -360,8 +366,17 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
         <p id="set-msg" class="msg" role="status"></p>
       </div>
       <div class="card" style="grid-column:1/-1">
+        <h2>النقاط والمستويات</h2>
+        <p class="muted" style="margin:0">التعديل يسري على التسميع الجديد. أما نقاط اليوم والفريق والمبارزة فتُحسب بالقيم الجديدة كلها.</p>
+        <div id="cfg-grid" class="cfg-grid"></div>
+        <h3 style="font-size:1rem">المستويات (اسم المستوى والنقاط التي يبلغه بها الطالب في الموسم)</h3>
+        <div id="lv-grid" class="cfg-grid"></div>
+        <div class="row"><button id="cfg-save" class="btn primary" type="button">احفظ النقاط والمستويات</button><button id="cfg-reset" class="btn" type="button">أعد القيم الأصلية</button></div>
+        <p id="cfg-msg" class="msg" role="status"></p>
+      </div>
+      <div class="card" style="grid-column:1/-1">
         <h2>الطلاب في الفرق</h2>
-        <div class="tbl-wrap"><table><thead><tr><th>الطالب</th><th>الفريق</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
+        <div class="tbl-wrap"><table><thead><tr><th>اسم الطالب</th><th>الفريق</th><th></th></tr></thead><tbody id="m-body"></tbody></table></div>
       </div>
     </div>
   </section>
@@ -377,13 +392,19 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
 const TEAM_DEF = [
   ['t1','فريق ابن مسعود','#2F7FC1'],['t2','فريق أُبيّ بن كعب','#E0702C'],
   ['t3','فريق معاذ بن جبل','#7B4FB5'],['t4','فريق سالم مولى أبي حذيفة','#2E9A5A'],['t5','فريق زيد بن ثابت','#C2414B']];
-const LEVELS = [['انطلق',0,'#7A8A84'],['الأساس',1000,'#3FA34D'],['الصاعد',3000,'#2F7FC1'],['المثابر',6000,'#7B4FB5'],['المتميز',10000,'#EE7A2D'],['النابغة',15000,'#C9961A']];
+// القيم الأصلية؛ ما يحفظه المدير في settings/main يحلّ محلها
+const CFG0 = { newQ: 50, rev: 10, top: 20, ward: 50, sard: 300, rules: 200, adab: 200, sunnah: 50, fullDay: 200, duel: 50 };
+const CFG_LABELS = { newQ: 'ربع صفحة حفظ', rev: 'صفحة مراجعة', top: 'زيادة الإتقان (٪)', ward: 'إتمام الورد المقرر', sard: 'سرد جزء كامل', rules: 'الالتزام بالقواعد', adab: 'الأدب والأخلاق', sunnah: 'كل سنة', fullDay: 'يوم الفريق الكامل', duel: 'الفوز في المبارزة' };
+const LV0 = [{ n: 'الأساس', p: 1000 }, { n: 'الصاعد', p: 3000 }, { n: 'المثابر', p: 6000 }, { n: 'المتميز', p: 10000 }, { n: 'النابغة', p: 15000 }];
+const LV_COLORS = ['#3FA34D','#2F7FC1','#7B4FB5','#EE7A2D','#C9961A'];
+const TEAM_COLORS = ['#2F7FC1','#E0702C','#7B4FB5','#2E9A5A','#C2414B','#0E8C8C','#B8578E','#6B7A2E'];
+let CF = { ...CFG0 }, LEVELS = buildLevels(LV0);
+function buildLevels(lv){ return [['انطلق', 0, '#7A8A84'], ...lv.map((l, i) => [l.n, l.p, LV_COLORS[i % LV_COLORS.length]])]; }
 const SURAHS = [[67,'الملك',30],[68,'القلم',52],[69,'الحاقة',52],[70,'المعارج',44],[71,'نوح',28],[72,'الجن',28],[73,'المزمل',20],[74,'المدثر',56],[75,'القيامة',40],[76,'الإنسان',31],[77,'المرسلات',50],[78,'النبأ',40],[79,'النازعات',46],[80,'عبس',42],[81,'التكوير',29],[82,'الانفطار',19],[83,'المطففين',36],[84,'الانشقاق',25],[85,'البروج',22],[86,'الطارق',17],[87,'الأعلى',19],[88,'الغاشية',26],[89,'الفجر',30],[90,'البلد',20],[91,'الشمس',15],[92,'الليل',21],[93,'الضحى',11],[94,'الشرح',8],[95,'التين',8],[96,'العلق',19],[97,'القدر',5],[98,'البينة',8],[99,'الزلزلة',8],[100,'العاديات',11],[101,'القارعة',11],[102,'التكاثر',8],[103,'العصر',3],[104,'الهمزة',9],[105,'الفيل',5],[106,'قريش',4],[107,'الماعون',7],[108,'الكوثر',3],[109,'الكافرون',6],[110,'النصر',3],[111,'المسد',5],[112,'الإخلاص',4],[113,'الفلق',5],[114,'الناس',6]];
 const MEDALS = ['#E2B93B','#C8CED3','#D39A6A'];
-const FULL_DAY = 200, DUEL = 50;
-const DAILY = [['rules','الالتزام بالقواعد',200],['adab','الأدب والأخلاق',200],['duha','الضحى',50],['fajr','سنة الفجر',50],['zq','سنة الظهر القبلية',50],['zb','سنة الظهر البعدية',50],['asr','سنة العصر',50],['mgh','سنة المغرب',50]];
+const DAILY = [['rules','الالتزام بالقواعد','rules'],['adab','الأدب والأخلاق','adab'],['duha','الضحى','sunnah'],['fajr','سنة الفجر','sunnah'],['zq','سنة الظهر القبلية','sunnah'],['zb','سنة الظهر البعدية','sunnah'],['asr','سنة العصر','sunnah'],['mgh','سنة المغرب','sunnah']];
 // نقاط اليوم تُحسب من الخانات عند القراءة، فلا يمحو مسؤولٌ خانةَ غيره
-const ptsOf = e => e.kind === 'daily' ? DAILY.filter(d => e[d[0]]).reduce((a, d) => a + d[2], 0) : (e.pts || 0);
+const ptsOf = e => e.kind === 'daily' ? DAILY.filter(d => e[d[0]]).reduce((a, d) => a + (CF[d[2]] || 0), 0) : (e.pts || 0);
 const isTasmee = e => !e.kind || e.kind === 'tasmee';
 
 const $ = id => document.getElementById(id);
@@ -398,9 +419,9 @@ const dayName = s => new Date(s + 'T12:00').toLocaleDateString('ar-SA-u-ca-grego
 // النقاط: الربع ٥٠، الصفحة مراجعةً ١٠، الإتقان +٢٠٪ على الحفظ والمراجعة
 function calcPts(f){
   if (f.quality === 'redo') return 0;
-  let base = f.newQ * 50 + f.rev * 10;
-  if (f.quality === 'top') base = Math.round(base * 1.2);
-  return base + (f.ward ? 50 : 0) + (f.sard ? 300 : 0);
+  let base = f.newQ * CF.newQ + f.rev * CF.rev;
+  if (f.quality === 'top') base = Math.round(base * (1 + CF.top / 100));
+  return base + (f.ward ? CF.ward : 0) + (f.sard ? CF.sard : 0);
 }
 console.assert(calcPts({newQ:2,rev:10,quality:'good'}) === 200 && calcPts({newQ:2,rev:10,quality:'top',ward:true}) === 290 && calcPts({newQ:4,rev:0,quality:'redo'}) === 0, 'calcPts');
 
@@ -446,7 +467,7 @@ function compute(r){
     const mem = S.students.filter(s => s.team === t.id);
     const raw = mem.reduce((a, s) => a + stu[s.id], 0);
     const full = mem.length ? Object.values(daySet).filter(set => mem.every(s => set.has(s.id))).length : 0;
-    const score = (mem.length ? Math.round(raw * maxSize / mem.length) : 0) + full * FULL_DAY + (duel[t.id] || 0);
+    const score = (mem.length ? Math.round(raw * maxSize / mem.length) : 0) + full * CF.fullDay + (duel[t.id] || 0);
     return { ...t, size: mem.length, score, full };
   }).sort((a, b) => b.score - a.score);
   return { stu, teams };
@@ -560,21 +581,30 @@ function spin(){
 
 // ---- الإعداد ----
 function renderSetup(){
-  $('t-create').hidden = S.teams.length > 0;
-  $('t-list').innerHTML = S.teams.length ? S.teams.map(t => `<div class="row"><span class="dot" style="--c:${t.color}"></span><b>${esc(t.name)}</b><span class="muted">${n(S.students.filter(s => s.team === t.id).length)} طلاب</span></div>`).join('')
-    : '<p class="muted" style="margin:0">لم تُنشأ الفرق بعد. خمسة أسماء: ابن مسعود، وأُبيّ بن كعب، ومعاذ بن جبل، وسالم مولى أبي حذيفة، وزيد بن ثابت؛ يؤخذ منها العدد الذي تختاره.</p>';
-  $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + S.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
-  $('set-start').value = S.settings.start || '';
-  const opts = id => S.teams.map(t => `<option value="${t.id}"${t.id === id ? ' selected' : ''}>${esc(t.name)}</option>`).join('');
+  const busy = el => el.contains(document.activeElement);
+  $('t-create').hidden = R.teams.length > 0; $('t-add').hidden = !R.teams.length;
+  if (!busy($('t-list'))){
+    const arm = $('t-list').dataset.arm;
+    $('t-list').innerHTML = R.teams.length ? R.teams.map(t => `<div class="row"><input type="color" data-tcolor="${t.id}" value="${esc(t.color || '#2F7FC1')}" aria-label="لون ${esc(t.name)}"><input class="tname" data-tname="${t.id}" value="${esc(t.name)}" aria-label="اسم الفريق"><span class="muted">${n(R.students.filter(s => s.team === t.id).length)} طلاب</span><button type="button" class="btn" data-tdel="${t.id}" style="color:var(--danger)">${arm === t.id ? 'تأكيد' : 'حذف'}</button></div>`).join('')
+      : '<p class="muted" style="margin:0">لم تُنشأ الفرق بعد. اختر العدد، ثم عدّل الأسماء والألوان كما تريد.</p>';
+  }
+  $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + R.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+  if (!busy($('set-start'))) $('set-start').value = S.settings.start || '';
+  if (!busy($('cfg-grid'))) $('cfg-grid').innerHTML = Object.keys(CFG0).map(k => `<label>${CFG_LABELS[k]}<input id="cfg-${k}" type="number" min="0" step="1" inputmode="numeric" value="${CF[k]}"></label>`).join('');
+  if (!busy($('lv-grid'))) $('lv-grid').innerHTML = LEVELS.slice(1).map((l, i) => `<label><input id="lvn-${i}" value="${esc(l[0])}" aria-label="اسم المستوى ${i + 1}"><input id="lvp-${i}" type="number" min="1" step="1" inputmode="numeric" value="${l[1]}" aria-label="نقاط المستوى ${i + 1}"></label>`).join('');
+  if (busy($('m-body'))) return;
+  const opts = id => R.teams.map(t => `<option value="${t.id}"${t.id === id ? ' selected' : ''}>${esc(t.name)}</option>`).join('');
   const arm = $('m-body').dataset.arm;
-  $('m-body').innerHTML = S.demo ? '<tr><td colspan="3" class="empty">لا طلاب بعد.</td></tr>' : [...S.students].sort((a, b) => (a.team || '').localeCompare(b.team || '') || a.name.localeCompare(b.name, 'ar')).map(s =>
-    `<tr><td><b>${esc(s.name)}</b></td><td><select class="sel" data-move="${s.id}" aria-label="فريق ${esc(s.name)}">${opts(s.team)}</select></td><td><button type="button" class="btn" data-rm="${s.id}" style="color:var(--danger)">${arm === s.id ? 'تأكيد الحذف' : 'حذف'}</button></td></tr>`).join('');
+  $('m-body').innerHTML = !R.students.length ? '<tr><td colspan="3" class="empty">لا طلاب بعد.</td></tr>' : [...R.students].sort((a, b) => (a.team || '').localeCompare(b.team || '') || a.name.localeCompare(b.name, 'ar')).map(s =>
+    `<tr><td><input class="sname" data-sname="${s.id}" value="${esc(s.name)}" aria-label="اسم الطالب"></td><td><select class="sel" data-move="${s.id}" aria-label="فريق ${esc(s.name)}">${opts(s.team)}</select></td><td><button type="button" class="btn" data-rm="${s.id}" style="color:var(--danger)">${arm === s.id ? 'تأكيد الحذف' : 'حذف'}</button></td></tr>`).join('');
 }
 
 function renderAll(){
   $('banner').hidden = !S.demo && S.db;
   if (!S.db) $('banner').innerHTML = S.ready ? 'هذه نسخة عرض فقط: سجّل دخولك في claude.ai لترى النقاط الحقيقية وتسجّلها.' : 'جارٍ تحميل نقاط الدوري…';
   else if (S.demo) $('banner').innerHTML = 'عرض تجريبي بأسماء وهمية. ابدأ من <a href="#setup">الإعداد</a>: أنشئ الفرق وأضف أسماء الطلاب، فتختفي البيانات التجريبية.';
+  const VV = { ...CF, half: CF.newQ * 2, ten: CF.rev * 10 };
+  document.querySelectorAll('[data-v]').forEach(el => { el.textContent = n(VV[el.dataset.v] ?? 0); });
   renderBoard(); renderStudents(); renderPicker(); renderForm(); renderToday(); renderDaily(); renderDuel(); renderSetup();
   $('lv-list').innerHTML = LEVELS.slice(1).map(l => `<div style="--lc:${l[2]}">${l[0]}<small class="num">${n(l[1])} نقطة</small></div>`).join('');
 }
@@ -592,7 +622,7 @@ function demoData(){
       entries.push({ id: 'e' + d + i, sid: st.id, date, ...f, pts: calcPts(f), at: d * 1e6 + i });
       entries.push({ id: 'y' + d + i, kind: 'daily', sid: st.id, date, rules: rnd() < .85, adab: rnd() < .85, duha: rnd() < .5, fajr: rnd() < .6, zq: rnd() < .5, zb: rnd() < .7, asr: rnd() < .4, mgh: rnd() < .5, at: 0 }); });
   }
-  entries.push({ id: 'dd', kind: 'duel', team: 't2', vs: 't3', date: today(), pts: DUEL, at: 9e9, q: 'سورة الفجر ١٥' });
+  entries.push({ id: 'dd', kind: 'duel', team: 't2', vs: 't3', date: today(), pts: CF.duel, at: 9e9, q: 'سورة الفجر ١٥' });
   return { teams, students, entries };
 }
 // البيانات الحقيقية تُحفظ في R، والعرض يقرأ من S
@@ -604,6 +634,7 @@ function sync(){
   S.students = S.demo ? d.students.map((s, i) => ({ ...s, team: S.teams[i % S.teams.length].id })) : R.students;
   S.entries = S.demo ? d.entries : R.entries;
   S.settings = R.settings;
+  CF = { ...CFG0, ...(R.settings.pts || {}) }; LEVELS = buildLevels(Array.isArray(R.settings.levels) && R.settings.levels.length ? R.settings.levels : LV0);
   if (F.sid && !studentById(F.sid)) F.sid = null;
   renderAll();
 }
@@ -684,7 +715,7 @@ $('d-spin').onclick = spin;
 for (const k of ['a','b']) $('d-w' + k).onclick = async () => {
   if (!S.db || S.demo) return; if (D.a === D.b) return setMsg('d-msg', 'اختر فريقين مختلفين.', 'err');
   const win = D[k], lose = D[k === 'a' ? 'b' : 'a'];
-  try { await S.db.collection('entries').add({ kind: 'duel', team: win, vs: lose, date: today(), pts: DUEL, q: D.last || '', at: Date.now() }); setMsg('d-msg', '+' + n(DUEL) + ' لـ' + teamById(win).name + '.', 'good'); }
+  try { await S.db.collection('entries').add({ kind: 'duel', team: win, vs: lose, date: today(), pts: CF.duel, q: D.last || '', at: Date.now() }); setMsg('d-msg', '+' + n(CF.duel) + ' لـ' + teamById(win).name + '.', 'good'); }
   catch (e) { setMsg('d-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); }
 };
 $('t-make').onclick = async () => {
@@ -709,8 +740,45 @@ $('a-add').onclick = async () => {
   } catch (e) { setMsg('a-msg', 'توقفت الإضافة (' + (e?.code || 'خطأ') + '). تحقق من القائمة.', 'err'); }
   $('a-add').disabled = false;
 };
-$('set-save').onclick = async () => { if (!S.db) return; try { await S.db.doc('settings/main').set({ start: $('set-start').value || '' }); setMsg('set-msg', 'حُفظ.', 'good'); } catch (e) { setMsg('set-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); } };
-$('m-body').onchange = async ev => { const sel = ev.target.closest('[data-move]'); if (!sel || !S.db) return; try { await S.db.doc('students/' + sel.dataset.move).update({ team: sel.value }); } catch (e) {} };
+$('set-save').onclick = async () => { if (!S.db) return; try { await S.db.doc('settings/main').set({ ...R.settings, start: $('set-start').value || '' }); setMsg('set-msg', 'حُفظ.', 'good'); } catch (e) { setMsg('set-msg', 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err'); } };
+const saveErr = (id, e) => setMsg(id, 'تعذّر الحفظ (' + (e?.code || 'خطأ') + ').', 'err');
+$('m-body').onchange = async ev => {
+  if (!S.db) return; const sel = ev.target.closest('[data-move]'), nm = ev.target.closest('[data-sname]');
+  try {
+    if (sel) await S.db.doc('students/' + sel.dataset.move).update({ team: sel.value });
+    if (nm){ const v = nm.value.trim(); if (!v){ nm.value = studentById(nm.dataset.sname)?.name || ''; return; } await S.db.doc('students/' + nm.dataset.sname).update({ name: v }); }
+  } catch (e) { saveErr('a-msg', e); }
+};
+$('t-list').onchange = async ev => {
+  if (!S.db) return; const nm = ev.target.closest('[data-tname]'), col = ev.target.closest('[data-tcolor]');
+  try {
+    if (nm){ const v = nm.value.trim(); if (!v) return setMsg('t-msg', 'اكتب اسم الفريق.', 'err'); await S.db.doc('teams/' + nm.dataset.tname).update({ name: v }); setMsg('t-msg', 'حُفظ اسم الفريق.', 'good'); }
+    if (col) await S.db.doc('teams/' + col.dataset.tcolor).update({ color: col.value });
+  } catch (e) { saveErr('t-msg', e); }
+};
+$('t-list').onkeydown = ev => { if (ev.key === 'Enter' && ev.target.matches('[data-tname]')) ev.target.blur(); };
+$('t-list').onclick = async ev => {
+  const b = ev.target.closest('[data-tdel]'); if (!b || !S.db) return; const id = b.dataset.tdel, list = $('t-list');
+  if (R.students.some(s => s.team === id)) return setMsg('t-msg', 'انقل طلاب هذا الفريق إلى فريق آخر أولًا، ثم احذفه.', 'err');
+  if (list.dataset.arm !== id){ list.dataset.arm = id; b.textContent = 'تأكيد'; return; }
+  list.dataset.arm = ''; try { await S.db.doc('teams/' + id).delete(); } catch (e) { saveErr('t-msg', e); }
+};
+$('t-add').onclick = async () => {
+  if (!S.db) return; const order = Math.max(-1, ...R.teams.map(t => t.order ?? 0)) + 1;
+  const used = new Set(R.teams.map(t => t.id)), def = TEAM_DEF.find(d => !used.has(d[0]));
+  const id = def ? def[0] : 't' + Date.now().toString(36);
+  try { await S.db.doc('teams/' + id).set({ name: def ? def[1] : 'فريق جديد', color: def ? def[2] : TEAM_COLORS[order % TEAM_COLORS.length], order }); setMsg('t-msg', 'أُضيف فريق. عدّل اسمه ولونه.', 'good'); }
+  catch (e) { saveErr('t-msg', e); }
+};
+$('cfg-save').onclick = async () => {
+  if (!S.db) return setMsg('cfg-msg', 'سجّل دخولك أولًا.', 'err');
+  const pts = {}; for (const k of Object.keys(CFG0)){ const v = Number($('cfg-' + k).value); if (!Number.isFinite(v) || v < 0 || !Number.isInteger(v)) return setMsg('cfg-msg', 'قيمة «' + CFG_LABELS[k] + '» يجب أن تكون عددًا صحيحًا موجبًا.', 'err'); pts[k] = v; }
+  const levels = LEVELS.slice(1).map((_, i) => ({ n: $('lvn-' + i).value.trim(), p: Number($('lvp-' + i).value) }));
+  if (levels.some(l => !l.n)) return setMsg('cfg-msg', 'اكتب اسم كل مستوى.', 'err');
+  if (levels.some((l, i) => !Number.isInteger(l.p) || l.p <= 0 || (i && l.p <= levels[i - 1].p))) return setMsg('cfg-msg', 'نقاط كل مستوى يجب أن تكون أكبر من المستوى الذي قبله.', 'err');
+  try { await S.db.doc('settings/main').set({ ...R.settings, pts, levels }); setMsg('cfg-msg', 'حُفظت النقاط والمستويات.', 'good'); } catch (e) { saveErr('cfg-msg', e); }
+};
+$('cfg-reset').onclick = () => { Object.keys(CFG0).forEach(k => { $('cfg-' + k).value = CFG0[k]; }); LV0.forEach((l, i) => { if ($('lvn-' + i)){ $('lvn-' + i).value = l.n; $('lvp-' + i).value = l.p; } }); setMsg('cfg-msg', 'اضغط «احفظ» لاعتماد القيم الأصلية.', ''); };
 $('m-body').onclick = async ev => { const b = ev.target.closest('[data-rm]'); if (!b || !S.db) return; const id = b.dataset.rm, body = $('m-body');
   if (body.dataset.arm !== id){ body.dataset.arm = id; renderSetup(); return; }
   body.dataset.arm = ''; try { await S.db.doc('students/' + id).delete(); } catch (e) {} };
