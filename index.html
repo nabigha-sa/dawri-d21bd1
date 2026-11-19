@@ -41,6 +41,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap;background:var(--sunk);padding:4px;borde
 nav a{padding:6px 12px;border-radius:9px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem}
 nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0/.08)}
 
+.clsel{display:flex;align-items:center;gap:8px;font-weight:700}
 .banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--r);padding:10px 14px;font-weight:500}
 .banner a{color:inherit;font-weight:700}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -202,6 +203,7 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
     <nav aria-label="أقسام المسابقة">
       <a href="#board">لوحة السباق</a><a href="#record">تسجيل التسميع</a><a href="#daily">نقاط اليوم</a><a href="#duel">المبارزة</a><a href="#students">الطلاب</a><a href="#rules">القوانين</a><a href="#setup">الإعداد</a>
     </nav>
+    <label id="cls-wrap" class="clsel" hidden><span>الفصل</span><select id="cls" class="sel" aria-label="الفصل"></select></label>
   </header>
   <div id="banner" class="banner" hidden></div>
 
@@ -357,6 +359,13 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
 
   <section id="v-setup" class="view" hidden>
     <div class="setup">
+      <div class="card">
+        <h2>الفصول</h2>
+        <p class="muted" style="margin:0">أنشئ الفصول، ثم اختر لكل فريق فصله في بطاقة الفرق. كل جهاز يختار فصله من أعلى الصفحة، فلا يرى إلا حلقات فصله وطلابها.</p>
+        <div id="c-list" class="view" style="gap:8px"></div>
+        <div class="row"><input id="c-name" class="tname" placeholder="اسم الفصل، مثل: الأول الابتدائي" aria-label="اسم الفصل الجديد"><button id="c-add" class="btn primary" type="button">أضف فصلًا</button></div>
+        <p id="c-msg" class="msg" role="status"></p>
+      </div>
       <div class="card">
         <h2>الفرق</h2>
         <div id="t-list" class="view" style="gap:8px"></div>
@@ -603,17 +612,23 @@ function spin(){
 function renderSetup(){
   const busy = el => el.contains(document.activeElement);
   $('t-create').hidden = R.teams.length > 0; $('t-add').hidden = !R.teams.length;
+  if (!busy($('c-list'))){
+    const carm = $('c-list').dataset.arm;
+    $('c-list').innerHTML = R.classes.length ? R.classes.map(c => `<div class="row"><input class="tname" data-cname="${c.id}" value="${esc(c.name)}" aria-label="اسم الفصل"><span class="muted">${n(R.teams.filter(t => t.cls === c.id).length)} فرق</span><button type="button" class="btn" data-cdel="${c.id}" style="color:var(--danger)">${carm === c.id ? 'تأكيد' : 'حذف'}</button></div>`).join('')
+      : '<p class="muted" style="margin:0">لا فصول بعد. بدون فصول تظهر كل الفرق معًا.</p>';
+  }
+  const clsOpts = id => '<option value="">بلا فصل</option>' + R.classes.map(c => `<option value="${c.id}"${c.id === id ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
   if (!busy($('t-list'))){
     const arm = $('t-list').dataset.arm;
-    $('t-list').innerHTML = R.teams.length ? R.teams.map(t => `<div class="row"><input type="color" data-tcolor="${t.id}" value="${esc(t.color || '#2F7FC1')}" aria-label="لون ${esc(t.name)}"><input class="tname" data-tname="${t.id}" value="${esc(t.name)}" aria-label="اسم الفريق"><span class="muted">${n(R.students.filter(s => s.team === t.id).length)} طلاب</span><button type="button" class="btn" data-tdel="${t.id}" style="color:var(--danger)">${arm === t.id ? 'تأكيد' : 'حذف'}</button></div>`).join('')
+    $('t-list').innerHTML = R.teams.length ? R.teams.map(t => `<div class="row"><input type="color" data-tcolor="${t.id}" value="${esc(t.color || '#2F7FC1')}" aria-label="لون ${esc(t.name)}"><input class="tname" data-tname="${t.id}" value="${esc(t.name)}" aria-label="اسم الفريق">${R.classes.length ? `<select class="sel" data-tcls="${t.id}" aria-label="فصل ${esc(t.name)}">${clsOpts(t.cls)}</select>` : ''}<span class="muted">${n(R.students.filter(s => s.team === t.id).length)} طلاب</span><button type="button" class="btn" data-tdel="${t.id}" style="color:var(--danger)">${arm === t.id ? 'تأكيد' : 'حذف'}</button></div>`).join('')
       : '<p class="muted" style="margin:0">لم تُنشأ الفرق بعد. اختر العدد، ثم عدّل الأسماء والألوان كما تريد.</p>';
   }
-  $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + R.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+  $('a-team').innerHTML = '<option value="">توزيع تلقائي على الفرق</option>' + R.teams.map(t => `<option value="${t.id}">${esc(tLabel(t))}</option>`).join('');
   if (!busy($('set-start'))) $('set-start').value = S.settings.start || '';
   if (!busy($('cfg-grid'))) $('cfg-grid').innerHTML = Object.keys(CFG0).map(k => `<label>${CFG_LABELS[k]}<input id="cfg-${k}" type="number" min="0" step="1" inputmode="numeric" value="${CF[k]}"></label>`).join('');
   if (!busy($('lv-grid'))) $('lv-grid').innerHTML = LEVELS.slice(1).map((l, i) => `<label><input id="lvn-${i}" value="${esc(l[0])}" aria-label="اسم المستوى ${i + 1}"><input id="lvp-${i}" type="number" min="1" step="1" inputmode="numeric" value="${l[1]}" aria-label="نقاط المستوى ${i + 1}"></label>`).join('');
   if (busy($('m-body'))) return;
-  const opts = id => R.teams.map(t => `<option value="${t.id}"${t.id === id ? ' selected' : ''}>${esc(t.name)}</option>`).join('');
+  const opts = id => R.teams.map(t => `<option value="${t.id}"${t.id === id ? ' selected' : ''}>${esc(tLabel(t))}</option>`).join('');
   const arm = $('m-body').dataset.arm;
   $('m-body').innerHTML = !R.students.length ? '<tr><td colspan="3" class="empty">لا طلاب بعد.</td></tr>' : [...R.students].sort((a, b) => (a.team || '').localeCompare(b.team || '') || a.name.localeCompare(b.name, 'ar')).map(s =>
     `<tr><td><input class="sname" data-sname="${s.id}" value="${esc(s.name)}" aria-label="اسم الطالب"></td><td><select class="sel" data-move="${s.id}" aria-label="فريق ${esc(s.name)}">${opts(s.team)}</select></td><td><button type="button" class="btn" data-rm="${s.id}" style="color:var(--danger)">${arm === s.id ? 'تأكيد الحذف' : 'حذف'}</button></td></tr>`).join('');
@@ -623,6 +638,11 @@ function renderAll(){
   $('banner').hidden = !S.demo && S.db;
   if (!S.db) $('banner').innerHTML = S.ready ? 'هذه نسخة عرض فقط: سجّل دخولك في claude.ai لترى النقاط الحقيقية وتسجّلها.' : 'جارٍ تحميل نقاط الدوري…';
   else if (S.demo) $('banner').innerHTML = 'عرض تجريبي بأسماء وهمية. ابدأ من <a href="#setup">الإعداد</a>: أنشئ الفرق وأضف أسماء الطلاب، فتختفي البيانات التجريبية.';
+  $('cls-wrap').hidden = !R.classes.length;
+  const curC = curCls(), clsHtml = '<option value="">كل الفصول</option>' + R.classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  if ($('cls').dataset.h !== clsHtml){ $('cls').innerHTML = clsHtml; $('cls').dataset.h = clsHtml; }
+  $('cls').value = curC;
+  document.querySelector('#v-board h1').textContent = 'سباق الفرق' + (curC ? ' · ' + clsName(curC) : '');
   const VV = { ...CF, half: CF.newQ * 2, ten: CF.rev * 10 };
   document.querySelectorAll('[data-v]').forEach(el => { el.textContent = n(VV[el.dataset.v] ?? 0); });
   renderBoard(); renderStudents(); renderPicker(); renderForm(); renderToday(); renderDaily(); renderDuel(); renderSetup();
@@ -646,13 +666,28 @@ function demoData(){
   return { teams, students, entries };
 }
 // البيانات الحقيقية تُحفظ في R، والعرض يقرأ من S
-const R = { teams: [], students: [], entries: [], settings: {} };
+const R = { classes: [], teams: [], students: [], entries: [], settings: {} };
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+const CLS_KEY = 'hifz-league-cls';
+// الفصل المختار في هذا الجهاز؛ يُهمل إن حُذف الفصل
+const curCls = () => { const c = lsGet(CLS_KEY) || ''; return R.classes.some(x => x.id === c) ? c : ''; };
+const clsName = id => R.classes.find(c => c.id === id)?.name || '';
+const tLabel = t => (R.classes.length && t.cls ? clsName(t.cls) + ' · ' : '') + t.name;
 function sync(){
   S.demo = !R.students.length;
   const d = S.demo ? demoData() : null;
   S.teams = S.demo ? (R.teams.length ? R.teams : d.teams) : R.teams;
   S.students = S.demo ? d.students.map((s, i) => ({ ...s, team: S.teams[i % S.teams.length].id })) : R.students;
   S.entries = S.demo ? d.entries : R.entries;
+  const cur = S.demo ? '' : curCls();
+  if (cur){
+    S.teams = S.teams.filter(t => t.cls === cur);
+    const tids = new Set(S.teams.map(t => t.id));
+    S.students = S.students.filter(st => tids.has(st.team));
+    const sids = new Set(S.students.map(st => st.id));
+    S.entries = S.entries.filter(e => e.kind === 'duel' ? tids.has(e.team) : sids.has(e.sid));
+  }
   S.settings = R.settings;
   CF = { ...CFG0, ...(R.settings.pts || {}) }; LEVELS = buildLevels(Array.isArray(R.settings.levels) && R.settings.levels.length ? R.settings.levels : LV0);
   if (F.sid && !studentById(F.sid)) F.sid = null;
@@ -749,11 +784,13 @@ $('a-add').onclick = async () => {
   if (!R.teams.length) return setMsg('a-msg', 'أنشئ الفرق أولًا.', 'err');
   const names = [...new Set($('a-names').value.split('\n').map(x => x.trim()).filter(Boolean))];
   if (!names.length) return setMsg('a-msg', 'اكتب اسمًا واحدًا على الأقل.', 'err');
-  const fixed = $('a-team').value, count = {}; R.teams.forEach(t => count[t.id] = R.students.filter(s => s.team === t.id).length);
+  const cur = curCls(), pool = cur ? R.teams.filter(t => t.cls === cur) : R.teams;
+  if (!pool.length) return setMsg('a-msg', 'لا توجد فرق في الفصل المختار.', 'err');
+  const fixed = $('a-team').value, count = {}; pool.forEach(t => count[t.id] = R.students.filter(s => s.team === t.id).length);
   $('a-add').disabled = true;
   try {
     for (const name of names){
-      const team = fixed || R.teams.reduce((a, t) => count[t.id] < count[a.id] ? t : a).id; count[team]++;
+      const team = fixed || pool.reduce((a, t) => count[t.id] < count[a.id] ? t : a).id; count[team] = (count[team] || 0) + 1;
       await S.db.collection('students').add({ name, team, at: Date.now() });
     }
     $('a-names').value = ''; setMsg('a-msg', 'أُضيف ' + n(names.length) + ' طالبًا.', 'good');
@@ -774,7 +811,24 @@ $('t-list').onchange = async ev => {
   try {
     if (nm){ const v = nm.value.trim(); if (!v) return setMsg('t-msg', 'اكتب اسم الفريق.', 'err'); await S.db.doc('teams/' + nm.dataset.tname).update({ name: v }); setMsg('t-msg', 'حُفظ اسم الفريق.', 'good'); }
     if (col) await S.db.doc('teams/' + col.dataset.tcolor).update({ color: col.value });
+    const tc = ev.target.closest('[data-tcls]'); if (tc) await S.db.doc('teams/' + tc.dataset.tcls).update({ cls: tc.value });
   } catch (e) { saveErr('t-msg', e); }
+};
+$('cls').onchange = () => { lsSet(CLS_KEY, $('cls').value || null); F.sid = null; sync(); };
+$('c-add').onclick = async () => {
+  if (!S.db) return setMsg('c-msg', 'سجّل دخولك أولًا.', 'err');
+  const name = $('c-name').value.trim(); if (!name) return setMsg('c-msg', 'اكتب اسم الفصل.', 'err');
+  const order = Math.max(-1, ...R.classes.map(c => c.order ?? 0)) + 1;
+  try { await S.db.doc('classes/c' + Date.now().toString(36)).set({ name, order }); $('c-name').value = ''; setMsg('c-msg', 'أُضيف الفصل. اختر فصل كل فريق في بطاقة الفرق.', 'good'); } catch (e) { saveErr('c-msg', e); }
+};
+$('c-list').onchange = async ev => { const nm = ev.target.closest('[data-cname]'); if (!nm || !S.db) return; const v = nm.value.trim(); if (!v) return setMsg('c-msg', 'اكتب اسم الفصل.', 'err');
+  try { await S.db.doc('classes/' + nm.dataset.cname).update({ name: v }); setMsg('c-msg', 'حُفظ اسم الفصل.', 'good'); } catch (e) { saveErr('c-msg', e); } };
+$('c-list').onkeydown = ev => { if (ev.key === 'Enter' && ev.target.matches('[data-cname]')) ev.target.blur(); };
+$('c-list').onclick = async ev => {
+  const b = ev.target.closest('[data-cdel]'); if (!b || !S.db) return; const id = b.dataset.cdel, list = $('c-list');
+  if (R.teams.some(t => t.cls === id)) return setMsg('c-msg', 'انقل فرق هذا الفصل إلى فصل آخر أولًا، ثم احذفه.', 'err');
+  if (list.dataset.arm !== id){ list.dataset.arm = id; b.textContent = 'تأكيد'; return; }
+  list.dataset.arm = ''; try { await S.db.doc('classes/' + id).delete(); } catch (e) { saveErr('c-msg', e); }
 };
 $('t-list').onkeydown = ev => { if (ev.key === 'Enter' && ev.target.matches('[data-tname]')) ev.target.blur(); };
 $('t-list').onclick = async ev => {
@@ -787,7 +841,7 @@ $('t-add').onclick = async () => {
   if (!S.db) return; const order = Math.max(-1, ...R.teams.map(t => t.order ?? 0)) + 1;
   const used = new Set(R.teams.map(t => t.id)), def = TEAM_DEF.find(d => !used.has(d[0]));
   const id = def ? def[0] : 't' + Date.now().toString(36);
-  try { await S.db.doc('teams/' + id).set({ name: def ? def[1] : 'فريق جديد', color: def ? def[2] : TEAM_COLORS[order % TEAM_COLORS.length], order }); setMsg('t-msg', 'أُضيف فريق. عدّل اسمه ولونه.', 'good'); }
+  try { await S.db.doc('teams/' + id).set({ name: def ? def[1] : 'فريق جديد', color: def ? def[2] : TEAM_COLORS[order % TEAM_COLORS.length], order, cls: curCls() }); setMsg('t-msg', 'أُضيف فريق. عدّل اسمه ولونه.', 'good'); }
   catch (e) { saveErr('t-msg', e); }
 };
 $('cfg-save').onclick = async () => {
@@ -853,8 +907,6 @@ function sheetDb(url, pin){
   };
 }
 const PIN_KEY = 'hifz-league-pin';
-const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
-const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
 function gate(){
   return new Promise(resolve => {
     $('gate').hidden = false; $('gate-pin').focus();
@@ -869,9 +921,10 @@ function gate(){
 }
 function attach(db){
   const timer = setTimeout(() => { S.ready = true; renderAll(); }, 10000);
-  S.db = db; const seen = { teams: 0, students: 0, entries: 0, settings: 0 };
+  S.db = db; const seen = { classes: 0, teams: 0, students: 0, entries: 0, settings: 0 };
   const loaded = () => { if (Object.values(seen).every(Boolean)){ clearTimeout(timer); S.ready = true; } };
   const fail = e => { clearTimeout(timer); S.ready = true; if (e?.code === 'pin'){ lsSet(PIN_KEY, null); location.reload(); } renderAll(); };
+  db.collection('classes').onSnapshot(q => { R.classes = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.classes = 1; loaded(); sync(); }, fail);
   db.collection('teams').onSnapshot(q => { R.teams = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.teams = 1; loaded(); sync(); }, fail);
   db.collection('students').onSnapshot(q => { R.students = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.students = 1; loaded(); sync(); }, fail);
   db.collection('entries').onSnapshot(q => {
