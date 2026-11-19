@@ -14,6 +14,7 @@
   --display:"Cairo","IBM Plex Sans Arabic",Tahoma,sans-serif;
   --body:"IBM Plex Sans Arabic","Cairo",Tahoma,sans-serif;
   --r:14px;
+  --arena:#0B2E27; --on-arena:#F5F1E4; --arena-muted:#A9C2BA;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0A1C18; --surface:#112B25; --sunk:#0D241F; --ink:#EFEBDF; --muted:#9DB1AA; --line:#24453D;
@@ -61,28 +62,32 @@ nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow
 .seg{display:flex;background:var(--sunk);border-radius:10px;padding:3px}
 .seg button{border:0;background:none;padding:6px 14px;border-radius:8px;font-weight:600;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
-.lanes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-.lane{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;border-inline-start:8px solid var(--c)}
-.lane .rank{font-family:var(--display);font-weight:900;font-size:clamp(1.6rem,3.4vw,2.6rem);width:1.6em;text-align:center;color:var(--c)}
-.lane .who{min-width:0;display:flex;flex-direction:column;gap:6px}
-.lane .who b{font-family:var(--display);font-size:clamp(1.05rem,2.2vw,1.5rem);font-weight:800}
-.lane .who small{color:var(--muted);font-weight:500;font-size:.85rem}
-.track{height:16px;background:var(--sunk);border-radius:99px;position:relative;overflow:visible}
-.fill{height:100%;background:var(--c);border-radius:99px;position:relative;transition:width 1s cubic-bezier(.2,.8,.2,1);min-width:16px}
-.fill::after{content:"";position:absolute;inset-inline-end:-7px;top:50%;width:26px;height:26px;transform:translateY(-50%);border-radius:50%;background:var(--surface);border:5px solid var(--c)}
-.lane .score{font-family:var(--display);font-weight:900;font-size:clamp(1.4rem,3.2vw,2.4rem);min-width:3.5em;text-align:left}
-.lane.first{box-shadow:0 0 0 2px var(--gold)}
-.lane .crown{font-size:.8rem;font-weight:700;background:var(--gold);color:#1B1606;border-radius:6px;padding:0 8px;margin-inline-start:8px;vertical-align:middle}
-.srace{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--rows,1),auto);grid-auto-flow:column;gap:8px 28px}
-.srace li{display:grid;grid-template-columns:2.2em minmax(0,11em) 4.2em minmax(0,1fr);align-items:center;gap:10px;min-height:34px}
-.srace .r{font-family:var(--display);font-weight:800;color:var(--muted);text-align:center}
-.srace .nm{min-width:0;display:flex;flex-direction:column;line-height:1.25}
-.srace .nm b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srace .nm small{color:var(--muted);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srace .p{font-family:var(--display);font-weight:900;color:var(--ink)}
-.srace .bar{height:14px;background:var(--sunk);border-radius:99px;overflow:hidden}
-.srace .bar i{display:block;height:100%;border-radius:99px;background:var(--c);transition:width 1s cubic-bezier(.2,.8,.2,1)}
-.srace li.top .r{color:var(--gold)}
+.arena{background:var(--arena);color:var(--on-arena);border-radius:22px;padding:22px max(16px,2vw) 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.arena::before{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(to top,rgb(255 255 255/.05),transparent);pointer-events:none}
+.arena h2{color:var(--on-arena);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.arena h2 small{font-family:var(--body);font-weight:600;font-size:.85rem;color:var(--arena-muted)}
+.vrow{--maxh:clamp(150px,30vh,330px);display:grid;grid-template-columns:repeat(var(--n,1),minmax(0,1fr));gap:clamp(8px,2vw,28px);align-items:stretch;height:calc(var(--maxh) + 210px);position:relative}
+.vcol{display:grid;grid-template-rows:1fr auto;min-width:0;text-align:center}
+.vtop{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;min-width:0}
+.vcol .sc{font-family:var(--display);font-weight:900;font-size:clamp(1.2rem,2.8vw,2.4rem);line-height:1;color:#fff}
+.vcol .today{font-size:.8rem;font-weight:800;color:#0B2A12;background:#7FE3A0;border-radius:99px;padding:1px 10px}
+.vcol .lead{font-size:.8rem;font-weight:800;background:var(--gold);color:#1B1606;border-radius:99px;padding:1px 10px}
+.pillar{width:min(100%,150px);height:calc(var(--h) * var(--maxh));min-height:10px;border-radius:14px 14px 4px 4px;background:linear-gradient(to top,var(--c),color-mix(in srgb,var(--c) 62%,#fff));transition:height 1.2s cubic-bezier(.2,.8,.2,1);animation:grow 1.4s cubic-bezier(.2,.8,.2,1)}
+.vcol.first .pillar{box-shadow:0 0 0 3px var(--gold),0 0 34px color-mix(in srgb,var(--gold) 55%,transparent)}
+@keyframes grow{from{height:0}}
+.vfoot{display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px;border-top:3px solid rgb(255 255 255/.18);min-width:0}
+.vfoot .rk{font-family:var(--display);font-weight:900;font-size:clamp(1.1rem,2.2vw,1.8rem);color:var(--c);line-height:1}
+.vcol.first .vfoot .rk{color:var(--gold)}
+.vfoot .tn{font-family:var(--display);font-weight:800;font-size:clamp(.9rem,1.8vw,1.25rem);line-height:1.3;max-width:100%;overflow-wrap:anywhere}
+.vfoot small{color:var(--arena-muted);font-size:.78rem;font-weight:600;line-height:1.35}
+.vfoot small.chase{color:#FFD966}
+.vrow.kids{--maxh:clamp(110px,20vh,220px);height:calc(var(--maxh) + 130px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(58px,1fr);overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+.vrow.kids .sc{font-size:clamp(.95rem,1.6vw,1.3rem)}
+.vrow.kids .pillar{width:min(100%,64px);border-radius:10px 10px 3px 3px}
+.vrow.kids .tn{font-size:.85rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vrow.kids .rk{font-size:1rem}
+.vrow.kids .vcol.top3 .rk{color:var(--gold)}
+.countdown{font-weight:800;color:var(--gold)}
 .board-foot{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .stars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .stars li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--sunk)}
@@ -188,10 +193,9 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var
 input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-radius:10px;padding:2px;background:var(--bg)}
 
 @media (max-width:820px){
-  .srace{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-flow:row}
+  .vrow{--maxh:clamp(130px,26vh,240px)}
   .board-foot,.rec-grid,.duel-grid,.rules,.setup{grid-template-columns:minmax(0,1fr)}
   .field{grid-template-columns:1fr}.hint{grid-column:1}
-  .lane{gap:10px;padding:10px 12px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 :fullscreen .app{max-width:none}
@@ -215,8 +219,8 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
         <button id="fs" class="btn">ملء الشاشة</button>
       </div>
     </div>
-    <ol id="lanes" class="lanes"></ol>
-    <div class="card"><h2 id="sr-t">سباق الطلاب</h2><ol id="srace" class="srace"></ol></div>
+    <div class="arena"><h2>الفرق <small id="lead-line"></small></h2><div id="lanes" class="vrow"></div></div>
+    <div class="arena"><h2 id="sr-t">سباق الطلاب</h2><div id="srace" class="vrow kids"></div></div>
     <div class="board-foot">
       <div class="card"><h2 id="stars-t">نجوم الأسبوع</h2><ol id="stars" class="stars"></ol></div>
       <div class="card"><h2>آخر التسميعات</h2><ul id="feed" class="feed"></ul></div>
@@ -495,25 +499,36 @@ function compute(r){
 }
 
 // ---- العرض ----
+function weekLeft(){
+  const d = new Date().getDay();
+  if (d > 4) return 'انتهى سباق هذا الأسبوع، والجديد يبدأ الأحد';
+  return ['باقي ٤ أيام على نهاية السباق','باقي ٣ أيام على نهاية السباق','باقي يومان على نهاية السباق','غدًا آخر يوم في السباق','اليوم آخر يوم في السباق!'][d];
+}
 function renderBoard(){
   const wk = weekRange(), r = S.range === 'week' ? wk : seasonRange();
-  $('b-sub').textContent = S.range === 'week' ? 'من ' + dayName(wk[0]) + ' إلى ' + dayName(wk[1]) + ' · يبدأ السباق من الصفر كل أحد' : (S.settings.start ? 'منذ ' + dayName(S.settings.start) : 'كل النقاط منذ البداية');
+  $('b-sub').innerHTML = S.range === 'week' ? 'من ' + esc(dayName(wk[0])) + ' إلى ' + esc(dayName(wk[1])) + ' · <span class="countdown">' + weekLeft() + '</span>' : esc(S.settings.start ? 'منذ ' + dayName(S.settings.start) : 'كل النقاط منذ البداية');
   const { stu, teams } = compute(r);
+  const todayT = {}; compute([today(), today()]).teams.forEach(t => { todayT[t.id] = t.score; });
   const top = Math.max(1, ...teams.map(t => t.score));
-  $('lanes').innerHTML = teams.length ? teams.map((t, i) => `<li class="lane${i === 0 && t.score > 0 ? ' first' : ''}" style="--c:${t.color}">
-    <span class="rank">${n(i+1)}</span>
-    <div class="who"><b>${esc(t.name)}${i === 0 && t.score > 0 ? '<span class="crown">في الصدارة</span>' : ''}</b>
-      <div class="track"><div class="fill" style="width:${Math.max(3, t.score / top * 100)}%"></div></div>
-      <small>${n(t.size)} طلاب${t.full ? ' · ' + n(t.full) + ' يوم فريق كامل' : ''}</small></div>
-    <strong class="score num">${n(t.score)}</strong></li>`).join('') : '<li class="empty">أنشئ الفرق من «الإعداد».</li>';
+  $('lanes').style.setProperty('--n', teams.length || 1);
+  $('lanes').innerHTML = teams.length ? teams.map((t, i) => {
+    const lead = i === 0 && t.score > 0, prev = teams[i - 1], next = teams[1];
+    let chase = '';
+    if (i === 0 && next) chase = t.score > next.score ? `<small class="chase">متقدم بفارق ${n(t.score - next.score)}</small>` : (t.score ? `<small class="chase">متعادل مع ${esc(next.name)}</small>` : '');
+    else if (prev) chase = prev.score === t.score ? `<small class="chase">متعادل مع ${esc(prev.name)}</small>` : `<small class="chase">باقي ${n(prev.score - t.score + 1)} ليتجاوز ${esc(prev.name)}</small>`;
+    return `<div class="vcol${lead ? ' first' : ''}" style="--c:${t.color};--h:${(t.score / top).toFixed(3)}">
+      <div class="vtop">${lead ? '<span class="lead">في الصدارة</span>' : ''}${todayT[t.id] > 0 ? `<span class="today">+${n(todayT[t.id])} اليوم</span>` : ''}<b class="sc num">${n(t.score)}</b><div class="pillar"></div></div>
+      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(t.name)}</b>${chase}</div></div>`; }).join('') : '<p class="empty">أنشئ الفرق من «الإعداد».</p>';
+  $('lead-line').textContent = teams.length > 1 && teams[0].score > 0 ? 'كل نقطة تقرّب فريقك من القمة' : '';
   $('sr-t').textContent = S.range === 'week' ? 'سباق الطلاب هذا الأسبوع' : 'سباق الطلاب في الموسم';
   const sAll = compute(seasonRange()).stu;
   const sr = S.students.map(s => ({ s, p: stu[s.id] || 0 })).sort((a, b) => b.p - a.p || a.s.name.localeCompare(b.s.name, 'ar'));
   const sTop = Math.max(1, ...sr.map(x => x.p));
-  $('srace').style.setProperty('--rows', Math.ceil(sr.length / 2) || 1);
   $('srace').innerHTML = sr.length ? sr.map((x, i) => { const t = teamById(x.s.team);
-    return `<li class="${i < 3 && x.p > 0 ? 'top' : ''}" style="--c:${t?.color || '#999'}"><span class="r num">${n(i + 1)}</span><span class="nm"><b>${esc(x.s.name)}</b><small>${esc(t?.name || '')} · ${LEVELS[levelOf(sAll[x.s.id] || 0)][0]}</small></span><span class="p num">${n(x.p)}</span><span class="bar"><i style="width:${x.p ? Math.max(2, x.p / sTop * 100) : 0}%"></i></span></li>`; }).join('')
-    : '<li class="empty">أضف الطلاب من «الإعداد».</li>';
+    return `<div class="vcol${i < 3 && x.p > 0 ? ' top3' : ''}" style="--c:${t?.color || '#999'};--h:${(x.p / sTop).toFixed(3)}" title="${esc(x.s.name)} · ${esc(t?.name || '')}">
+      <div class="vtop"><b class="sc num">${n(x.p)}</b><div class="pillar"></div></div>
+      <div class="vfoot"><span class="rk num">${n(i + 1)}</span><b class="tn">${esc(x.s.name)}</b><small>${LEVELS[levelOf(sAll[x.s.id] || 0)][0]}</small></div></div>`; }).join('')
+    : '<p class="empty">أضف الطلاب من «الإعداد».</p>';
   $('stars-t').textContent = S.range === 'week' ? 'نجوم الأسبوع' : 'نجوم الموسم';
   const stars = S.students.map(s => ({ s, p: stu[s.id] })).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 3);
   $('stars').innerHTML = stars.length ? stars.map((x, i) => { const t = teamById(x.s.team);
@@ -704,13 +719,22 @@ function announce(e){
     const after = compute(seasonRange()).stu[e.sid] || 0, before = after - (e.pts || 0);
     if (levelOf(after) > levelOf(before)) lvl = `<div class="lvl">ارتقى إلى مستوى «${LEVELS[levelOf(after)][0]}»</div>`;
   }
-  popQ.push(`<div class="big num">+${n(e.pts)}</div><div class="nm">${esc(e.kind === 'duel' ? t.name : s.name)}</div><div class="muted">${esc(e.kind === 'duel' ? 'فاز في المبارزة' : t.name + ' · ' + entryText(e))}</div>${lvl}`);
-  if (!popTimer) nextPop(t.color);
+  popQ.push({ c: t.color, h: `<div class="big num">+${n(e.pts)}</div><div class="nm">${esc(e.kind === 'duel' ? t.name : s.name)}</div><div class="muted">${esc(e.kind === 'duel' ? 'فاز في المبارزة' : t.name + ' · ' + entryText(e))}</div>${lvl}` });
+  if (!popTimer) nextPop();
 }
-function nextPop(color){
-  const h = popQ.shift(); if (!h){ $('pop').hidden = true; popTimer = null; return; }
-  $('pop-card').innerHTML = h; if (color) $('pop-card').style.setProperty('--c', color); $('pop').hidden = false;
-  popTimer = setTimeout(() => nextPop(), 2600);
+function announceOvertake(before, after){
+  after.forEach((t, i) => {
+    const was = before.indexOf(t.id); if (was <= i || t.score <= 0) return;
+    const passed = after.slice(i + 1).find(o => before.indexOf(o.id) < was && before.indexOf(o.id) >= i);
+    if (!passed) return;
+    popQ.push({ c: t.color, h: `<div class="big" style="color:var(--c)">تجاوُز!</div><div class="nm">${esc(t.name)}</div><div class="muted">تجاوز ${esc(passed.name)} وصار في المركز ${n(i + 1)}</div>` });
+  });
+  if (popQ.length && !popTimer) nextPop();
+}
+function nextPop(){
+  const it = popQ.shift(); if (!it){ $('pop').hidden = true; popTimer = null; return; }
+  $('pop-card').innerHTML = it.h; $('pop-card').style.setProperty('--c', it.c || 'var(--green)'); $('pop').hidden = false;
+  popTimer = setTimeout(nextPop, 2600);
 }
 $('pop').addEventListener('click', () => { clearTimeout(popTimer); popQ.length = 0; popTimer = null; $('pop').hidden = true; });
 
@@ -929,8 +953,11 @@ function attach(db){
   db.collection('students').onSnapshot(q => { R.students = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.students = 1; loaded(); sync(); }, fail);
   db.collection('entries').onSnapshot(q => {
     const fresh = seen.entries && !S.demo ? q.docChanges().filter(c => c.type === 'added' && !c.doc.metadata.fromCache && (c.doc.data().at || 0) > Date.now() - 60000).map(c => ({ id: c.doc.id, ...c.doc.data() })) : [];
+    const onBoard = location.hash.slice(1) === 'board' || !location.hash;
+    const before = seen.entries && !S.demo ? compute(weekRange()).teams.map(t => t.id) : null;
     R.entries = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.entries = 1; loaded(); sync();
-    if (location.hash.slice(1) === 'board' || !location.hash) fresh.forEach(announce);
+    if (onBoard) fresh.forEach(announce);
+    if (onBoard && before && !S.demo) announceOvertake(before, compute(weekRange()).teams);
   }, fail);
   db.doc('settings/main').onSnapshot(d => { R.settings = d.exists ? d.data() : {}; seen.settings = 1; loaded(); sync(); }, fail);
 }
