@@ -1051,6 +1051,16 @@ $('m-body').onclick = async ev => { const b = ev.target.closest('[data-rm]'); if
   if (body.dataset.arm !== id){ body.dataset.arm = id; renderSetup(); return; }
   body.dataset.arm = ''; try { await S.db.doc('students/' + id).delete(); } catch (e) {} };
 
+// ---- تحديث تلقائي لنسخة GitHub: الصفحة المفتوحة منذ الصباح تأخذ آخر إصدار وحدها ----
+const BUILD = '20261119091000';
+if (BUILD !== 'dev') setInterval(async () => {
+  try {
+    const v = (await fetch('version.txt?' + Date.now(), { cache: 'no-store' }).then(r => r.text())).trim();
+    const busy = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '') || F.sid;
+    if (v && v !== BUILD && !busy) location.replace(location.pathname + '?v=' + v + location.hash);
+  } catch (e) {}
+}, 60000);
+
 // ---- التشغيل ----
 $('r-date').value = today(); $('y-date').value = today();
 route(); sync();
