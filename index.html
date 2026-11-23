@@ -43,6 +43,7 @@ nav a{padding:6px 12px;border-radius:9px;text-decoration:none;color:var(--muted)
 nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0/.08)}
 
 .clsel{display:flex;align-items:center;gap:8px;font-weight:700}
+.linkish{border:0;background:none;color:var(--green);font-weight:700;text-decoration:underline;cursor:pointer;padding:0;font-size:.85em}
 .banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--r);padding:10px 14px;font-weight:500}
 .banner a{color:inherit;font-weight:700}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -124,6 +125,11 @@ nav a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow
 .pop-card{background:var(--surface);border-radius:20px;padding:28px 36px;text-align:center;border-top:10px solid var(--c);animation:rise .5s cubic-bezier(.2,.9,.3,1.3);max-width:560px}
 .pop-card .big{font-family:var(--display);font-weight:900;font-size:clamp(3rem,10vw,6rem);color:var(--ok);line-height:1.1}
 .pop-card .nm{font-family:var(--display);font-weight:800;font-size:1.6rem}
+#gate{background:rgb(6 20 17/.92)}
+.gate-card{display:flex;flex-direction:column;gap:12px;text-align:right;--c:var(--green);width:min(520px,100%)}
+.gate-step{display:flex;flex-direction:column;gap:10px}
+.gate-step label{display:flex;flex-direction:column;gap:4px;font-weight:600}
+#g-schools .chip{font-size:1.05rem;padding:8px 16px}
 .pop-card .lvl{margin-top:10px;background:var(--gold-soft);border-radius:10px;padding:8px 12px;font-weight:700}
 @keyframes rise{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 
@@ -228,7 +234,7 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
 
 <div class="app" dir="rtl" lang="ar">
   <header class="top">
-    <div class="brand"><img src="logo.png" alt="شعار نابغة"><div><b>دوري الحُفّاظ</b><span>مسابقة الحفظ والمراجعة · برنامج نابغة</span></div></div>
+    <div class="brand"><img id="brand-logo" src="logo.png" alt="شعار نابغة"><div><b>دوري الحُفّاظ</b><span>مسابقة الحفظ والمراجعة · <span class="school-name">برنامج نابغة</span> <button id="switch-school" type="button" class="linkish" hidden>تبديل المدرسة</button></span></div></div>
     <nav aria-label="أقسام المسابقة">
       <a href="#board">لوحة السباق</a><a href="#record">تسجيل التسميع</a><a href="#daily">نقاط اليوم</a><a href="#duel">المبارزة</a><a href="#students">الطلاب</a><a href="#totals">مجموع الصفحات</a><a href="#rules">القوانين</a><a href="#setup">الإعداد</a>
     </nav>
@@ -366,7 +372,7 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
     <div class="rules">
       <div class="card wide">
         <h2>فكرة الدوري</h2>
-        <p>يتنافس طلاب نابغة في فرق تحمل أسماء الصحابة الذين أمر النبي ﷺ بأخذ القرآن عنهم، ومعهم زيد بن ثابت كاتب الوحي:</p>
+        <p>يتنافس طلاب <span class="school-name">نابغة</span> في فرق تحمل أسماء الصحابة الذين أمر النبي ﷺ بأخذ القرآن عنهم، ومعهم زيد بن ثابت كاتب الوحي:</p>
         <p class="hadith">«استقرئوا القرآن من أربعة: من عبد الله بن مسعود، وسالم مولى أبي حذيفة، وأُبيّ بن كعب، ومعاذ بن جبل» متفق عليه.</p>
         <p>كل تسميع عند المعلم، وكل التزام بقواعد البرنامج وأدب حسن، وكل سنة يصليها، يصنع نقاطًا للطالب نفسه (فيرتقي في مستواه) ولفريقه (فيتقدم في السباق). السباق يبدأ من الصفر كل أحد، والموسم يجمع الأسابيع كلها.</p>
       </div>
@@ -390,7 +396,7 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
         <ul>
           <li>لا تُحتسب نقطة إلا بتسميع عند المعلم. التسميع الضعيف يُعاد ولا يُسجّل حتى يُتقن.</li>
           <li>نقاط «الورد المقرر» تجعل الطالب الذي ورده ربع صفحة شريكًا حقيقيًا في فوز فريقه.</li>
-          <li>لا تُخصم نقطة أبدًا بعد أن كسبها الطالب. المخالفات والغياب يعالجها ميثاق نابغة، لا هذا الدوري.</li>
+          <li>لا تُخصم نقطة أبدًا بعد أن كسبها الطالب. المخالفات والغياب يعالجها <span class="school-name">ميثاق نابغة</span>، لا هذا الدوري.</li>
           <li>نقاط الأدب والسنن تدخل في المجموع، ولا تُعرض تفاصيلها على اللوحة.</li>
           <li>الفرق متقاربة في العدد والمستوى. إن اختلف العدد عُدِّل مجموع الفريق الأصغر بالنسبة.</li>
           <li>لكل فريق شريط في السباق، ولكل طالب شريط يُظهر نقاطه ومستواه.</li>
@@ -492,10 +498,21 @@ input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-rad
     </div>
   </section>
 </div>
-<div id="gate" class="pop" hidden><form id="gate-form" class="pop-card" style="--c:var(--green);display:flex;flex-direction:column;gap:12px;text-align:right">
-  <h2>دوري الحُفّاظ</h2><p class="muted" style="margin:0">أدخل رمز الدخول الذي أعطاك إياه مدير البرنامج.</p>
-  <input id="gate-pin" class="search" inputmode="numeric" autocomplete="off" aria-label="رمز الدخول">
-  <button id="gate-go" class="btn primary" type="submit">دخول</button><p id="gate-msg" class="msg" role="status"></p></form></div>
+<div id="gate" class="pop" hidden><div class="pop-card gate-card">
+  <h2>دوري الحُفّاظ</h2>
+  <div id="g-pick" class="gate-step"><p class="muted" style="margin:0">اختر مدرستك، أو أنشئ حسابًا لمدرسة جديدة.</p>
+    <div id="g-schools" class="chips"></div>
+    <button id="g-new-btn" class="btn" type="button">+ مدرسة جديدة</button></div>
+  <form id="gate-form" class="gate-step" hidden><p style="margin:0">رمز دخول <b id="g-school-name"></b></p>
+    <input id="gate-pin" class="search" inputmode="numeric" autocomplete="off" aria-label="رمز الدخول">
+    <div class="row"><button id="gate-go" class="btn primary" type="submit">دخول</button><button class="btn" type="button" data-back>رجوع</button></div></form>
+  <form id="g-new" class="gate-step" hidden><p class="muted" style="margin:0">لكل مدرسة طلابها وحلقاتها ونقاطها وإعداداتها، منفصلة عن غيرها. الرمز يعطيه المدير لمعلمي مدرسته.</p>
+    <label>اسم المدرسة<input id="g-new-name" class="search" maxlength="60" autocomplete="off"></label>
+    <label>رمز الدخول (٦ أرقام فأكثر)<input id="g-new-pin" class="search" inputmode="numeric" autocomplete="new-password"></label>
+    <label>أعد كتابة الرمز<input id="g-new-pin2" class="search" inputmode="numeric" autocomplete="new-password"></label>
+    <div class="row"><button id="g-new-go" class="btn primary" type="submit">أنشئ المدرسة</button><button class="btn" type="button" data-back>رجوع</button></div></form>
+  <p id="gate-msg" class="msg" role="status"></p>
+</div></div>
 <div id="pop" class="pop" hidden><div id="pop-card" class="pop-card"></div></div>
 
 <script>
@@ -887,7 +904,7 @@ function demoData(){
 const R = { classes: [], teams: [], students: [], entries: [], settings: {}, golden: null, goals: [], calls: [] };
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
-const CLS_KEY = 'hifz-league-cls';
+let CLS_KEY = 'hifz-league-cls';
 // الفصل المختار في هذا الجهاز؛ يُهمل إن حُذف الفصل
 const curCls = () => { const c = lsGet(CLS_KEY) || ''; return R.classes.some(x => x.id === c) ? c : ''; };
 const clsName = id => R.classes.find(c => c.id === id)?.name || '';
@@ -1145,7 +1162,7 @@ $('m-body').onclick = async ev => { const b = ev.target.closest('[data-rm]'); if
   body.dataset.arm = ''; try { await S.db.doc('students/' + id).delete(); } catch (e) {} };
 
 // ---- تحديث تلقائي لنسخة GitHub: الصفحة المفتوحة منذ الصباح تأخذ آخر إصدار وحدها ----
-const BUILD = '20261119203830';
+const BUILD = '20261123133534';
 if (BUILD !== 'dev') setInterval(async () => {
   try {
     const v = (await fetch('version.txt?' + Date.now(), { cache: 'no-store' }).then(r => r.text())).trim();
@@ -1159,9 +1176,9 @@ $('r-date').value = today(); $('y-date').value = today();
 route(); sync();
 // ---- نسخة GitHub: مخزن جدول Google عبر Apps Script بدل قاعدة claude.ai ----
 const SHEET_API = 'https://script.google.com/macros/s/AKfycbz9cHRLMEKYl5KuQGkCm_WQQ2_RcbZnSbbZTTjmjNI6wxYCcK_Crzmv_BTPW5CGpw_X/exec';
-function sheetDb(url, pin){
+function sheetDb(url, school, pin){
   const docs = new Map(), subs = []; let since = 0, loaded = false, busy = false;
-  const post = body => fetch(url, { method: 'POST', body: JSON.stringify({ pin, ...body }) }).then(r => r.json());
+  const post = body => fetch(url, { method: 'POST', body: JSON.stringify({ school, pin, ...body }) }).then(r => r.json());
   const snap = (id, d) => ({ id, exists: !!d, data: () => d, metadata: { fromCache: false, hasPendingWrites: false } });
   function emit(){
     for (const s of subs){
@@ -1203,19 +1220,59 @@ function sheetDb(url, pin){
       onSnapshot: (cb, err) => { subs.push({ doc: true, path, cb, err }); start(); return () => {}; } }),
   };
 }
-const PIN_KEY = 'hifz-league-pin';
+// كل جهاز يحفظ مدرسته ورمزها؛ الرمز القديم بلا مدرسة رمزُ نابغة.
+const CRED_KEY = 'hifz-league-school';
+const api = body => fetch(SHEET_API, { method: 'POST', body: JSON.stringify(body) }).then(r => r.json());
+function savedCred(){
+  try { const c = JSON.parse(lsGet(CRED_KEY) || 'null'); if (c?.school && c.pin) return c; } catch (e) {}
+  const old = lsGet('hifz-league-pin');
+  return old ? { school: 'nabigha', name: 'نابغة', pin: old } : null;
+}
 function gate(){
   return new Promise(resolve => {
-    $('gate').hidden = false; $('gate-pin').focus();
+    const step = id => { ['g-pick','gate-form','g-new'].forEach(k => $(k).hidden = k !== id); setMsg('gate-msg', '', ''); };
+    let chosen = null;
+    const loadSchools = async () => {
+      $('g-schools').innerHTML = '<span class="muted">جارٍ التحميل…</span>';
+      try { const r = await api({ op: 'schools' });
+        $('g-schools').innerHTML = r.schools.map(sc => `<button type="button" class="chip" data-school="${esc(sc.id)}" data-name="${esc(sc.name)}">${esc(sc.name)}</button>`).join(''); }
+      catch (e) { $('g-schools').innerHTML = ''; setMsg('gate-msg', 'تعذّر الاتصال، تحقق من الإنترنت.', 'err'); }
+    };
+    const enter = cred => { lsSet(CRED_KEY, JSON.stringify(cred)); lsSet('hifz-league-pin', null); $('gate').hidden = true; resolve(cred); };
+    $('gate').hidden = false; step('g-pick'); loadSchools();
+    $('g-schools').onclick = ev => { const b = ev.target.closest('[data-school]'); if (!b) return; chosen = { school: b.dataset.school, name: b.dataset.name }; $('g-school-name').textContent = chosen.name; $('gate-pin').value = ''; step('gate-form'); $('gate-pin').focus(); };
+    $('g-new-btn').onclick = () => { step('g-new'); $('g-new-name').focus(); };
+    document.querySelectorAll('#gate [data-back]').forEach(b => b.onclick = () => step('g-pick'));
     $('gate-form').onsubmit = async ev => {
-      ev.preventDefault(); const pin = $('gate-pin').value.trim(); if (!pin) return;
+      ev.preventDefault(); const pin = $('gate-pin').value.trim(); if (!pin || !chosen) return;
       $('gate-go').disabled = true; setMsg('gate-msg', 'جارٍ التحقق…', '');
-      try { const r = await sheetDb(SHEET_API, pin).check(); if (r.error) throw r; lsSet(PIN_KEY, pin); $('gate').hidden = true; resolve(pin); }
+      try { const r = await sheetDb(SHEET_API, chosen.school, pin).check(); if (r.error) throw r; enter({ ...chosen, pin }); }
       catch (e) { setMsg('gate-msg', e?.error === 'pin' ? 'الرمز غير صحيح.' : 'تعذّر الاتصال، تحقق من الإنترنت.', 'err'); }
       $('gate-go').disabled = false;
     };
+    $('g-new').onsubmit = async ev => {
+      ev.preventDefault();
+      const name = $('g-new-name').value.trim(), pin = $('g-new-pin').value.trim();
+      if (name.length < 2) return setMsg('gate-msg', 'اكتب اسم المدرسة.', 'err');
+      if (!/^\d{6,12}$/.test(pin)) return setMsg('gate-msg', 'الرمز ٦ أرقام على الأقل، أرقام فقط.', 'err');
+      if (pin !== $('g-new-pin2').value.trim()) return setMsg('gate-msg', 'الرمزان غير متطابقين.', 'err');
+      $('g-new-go').disabled = true; setMsg('gate-msg', 'جارٍ الإنشاء…', '');
+      try { const r = await api({ op: 'createSchool', name, newPin: pin });
+        if (r.error) throw r; enter({ school: r.id, name: r.name, pin }); }
+      catch (e) { setMsg('gate-msg', ({ exists: 'يوجد حساب بهذا الاسم. اختره من القائمة.', weak_pin: 'الرمز ٦ أرقام على الأقل.', name: 'اكتب اسم المدرسة.', full: 'امتلأ عدد المدارس. تواصل مع مدير البرنامج.' })[e?.error] || 'تعذّر الاتصال، تحقق من الإنترنت.', 'err'); }
+      $('g-new-go').disabled = false;
+    };
   });
 }
+// اسم المدرسة في العنوان والقوانين، وشعار نابغة لنابغة وحدها
+function showSchool(cred){
+  const nabigha = !cred || cred.school === 'nabigha';
+  document.querySelectorAll('.school-name').forEach(el => {
+    el.textContent = nabigha ? el.textContent : el.textContent.includes('ميثاق') ? 'لائحة ' + cred.name : cred.name; });
+  $('brand-logo').hidden = !nabigha;
+  if (cred){ $('switch-school').hidden = false; document.title = 'دوري الحفاظ · ' + cred.name; }
+}
+$('switch-school').onclick = () => { lsSet(CRED_KEY, null); lsSet('hifz-league-pin', null); location.reload(); };
 function attach(db){
   const timer = setTimeout(() => { S.ready = true; renderAll(); }, 10000);
   S.db = db; const seen = { classes: 0, teams: 0, students: 0, entries: 0, settings: 0 };
@@ -1223,7 +1280,7 @@ function attach(db){
   db.collection('goals').onSnapshot(q => { R.goals = q.docs.map(d => ({ id: d.id, ...d.data() })); sync(); }, () => {});
   db.collection('calls').onSnapshot(q => { R.calls = q.docs.map(d => ({ id: d.id, ...d.data() })); sync(); }, () => {});
   const loaded = () => { if (Object.values(seen).every(Boolean)){ clearTimeout(timer); S.ready = true; } };
-  const fail = e => { clearTimeout(timer); S.ready = true; if (e?.code === 'pin'){ lsSet(PIN_KEY, null); location.reload(); } renderAll(); };
+  const fail = e => { clearTimeout(timer); S.ready = true; if (e?.code === 'pin'){ lsSet(CRED_KEY, null); lsSet('hifz-league-pin', null); location.reload(); } renderAll(); };
   db.collection('classes').onSnapshot(q => { R.classes = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.classes = 1; loaded(); sync(); }, fail);
   db.collection('teams').onSnapshot(q => { R.teams = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)); seen.teams = 1; loaded(); sync(); }, fail);
   db.collection('students').onSnapshot(q => { R.students = q.docs.map(d => ({ id: d.id, ...d.data() })); seen.students = 1; loaded(); sync(); }, fail);
@@ -1241,8 +1298,10 @@ function attach(db){
   let db = null; try { db = await window.claude?.use?.('db'); } catch (e) {}
   if (db) return attach(db);
   if (!SHEET_API.startsWith('https://')){ S.ready = true; renderAll(); return; }
-  const pin = lsGet(PIN_KEY) || await gate();
-  attach(sheetDb(SHEET_API, pin));
+  const cred = savedCred() || await gate();
+  CLS_KEY = 'hifz-league-cls:' + cred.school;
+  showSchool(cred);
+  attach(sheetDb(SHEET_API, cred.school, cred.pin));
 })();
 })();
 </script>
